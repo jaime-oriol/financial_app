@@ -75,51 +75,91 @@ class LessonsPage extends StatelessWidget {
         ),
         const SizedBox(height: Sizes.lg),
 
-        // Daily challenge
+        // Daily challenge — navega a Quiz
         Text('Daily challenge',
             style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: Sizes.sm),
-        DefaultContainer(
-          margin: EdgeInsets.zero,
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(Sizes.sm),
-                decoration: BoxDecoration(
-                  color: warning.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(Sizes.borderRadius),
+        GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed('/quiz'),
+          child: DefaultContainer(
+            margin: EdgeInsets.zero,
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(Sizes.sm),
+                  decoration: BoxDecoration(
+                    color: warning.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(Sizes.borderRadius),
+                  ),
+                  child: const Icon(Icons.quiz, color: warning),
                 ),
-                child: const Icon(Icons.quiz, color: warning),
-              ),
-              const SizedBox(width: Sizes.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Needs vs. Wants quiz',
-                        style: Theme.of(context).textTheme.titleSmall),
-                    Text('1 question - Earn 10 XP',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: grey1)),
-                  ],
+                const SizedBox(width: Sizes.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Needs vs. Wants quiz',
+                          style: Theme.of(context).textTheme.titleSmall),
+                      Text('3 questions - Earn 30 XP',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: grey1)),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: Sizes.sm, vertical: Sizes.xs),
-                decoration: BoxDecoration(
-                  color: accent,
-                  borderRadius: BorderRadius.circular(Sizes.borderRadius),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: Sizes.sm, vertical: Sizes.xs),
+                  decoration: BoxDecoration(
+                    color: accent,
+                    borderRadius: BorderRadius.circular(Sizes.borderRadius),
+                  ),
+                  child: Text('New',
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge
+                          ?.copyWith(color: white)),
                 ),
-                child: Text('New',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge
-                        ?.copyWith(color: white)),
-              ),
-            ],
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: Sizes.sm),
+
+        // Simulation challenge — navega a Simulation
+        GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed('/simulation'),
+          child: DefaultContainer(
+            margin: EdgeInsets.zero,
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(Sizes.sm),
+                  decoration: BoxDecoration(
+                    color: secondary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(Sizes.borderRadius),
+                  ),
+                  child: const Icon(Icons.psychology, color: secondary),
+                ),
+                const SizedBox(width: Sizes.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Smart spending simulation',
+                          style: Theme.of(context).textTheme.titleSmall),
+                      Text('Split \$200 wisely',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: grey1)),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right, color: grey2),
+              ],
+            ),
           ),
         ),
         const SizedBox(height: Sizes.lg),
