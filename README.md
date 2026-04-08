@@ -31,8 +31,10 @@ Built as part of an academic project by **3:2 Analytics**, the app bridges the g
 - **Dashboard** — Spending by category chart, budget progress bars, recent transactions
 - **6 Preset Categories** — Food, Transport, Entertainment, Health, Education, Other
 
-### 📚 Gamification (Frontend mock)
+### 📚 Gamification
 - **Financial Lessons** — Structured modules: Budgeting basics, Needs vs. Wants, Saving money, etc.
+- **Quiz** — Multiple-choice questions with instant feedback, explanations, and XP rewards
+- **Financial Simulation** — Real-life scenario ($200 budget split) with outcome cards
 - **Daily Challenges** — Quick quizzes to earn XP
 - **Achievement Badges** — First Saver, Hot Streak, Budget Pro
 - **Savings Goals** — Visual goal tracking with behind-pace warnings
@@ -66,12 +68,21 @@ FAPP/
 │   ├── tests/                # 23 pytest tests
 │   └── requirements.txt
 │
-├── frontend/                 # Flutter mobile app
+├── frontend/                 # Flutter cross-platform app
+│   ├── assets/               # Logo and images
 │   └── lib/
 │       ├── model/            # Data models (User, Category, Expense, Budget, Dashboard)
 │       ├── services/         # API client (HTTP + JWT)
 │       ├── providers/        # Riverpod state management
-│       ├── pages/            # UI screens (auth, dashboard, budget, lessons, goals, profile)
+│       ├── pages/            # UI screens
+│       │   ├── auth/         # Register & Login
+│       │   ├── dashboard/    # Home with spending summary
+│       │   ├── budget/       # Budget tracker with donut chart
+│       │   ├── lessons/      # Financial education modules
+│       │   ├── quiz/         # Multiple-choice quiz with XP
+│       │   ├── simulation/   # Financial decision scenario
+│       │   ├── goals/        # Savings goal tracker
+│       │   └── profile/      # User profile & settings
 │       ├── ui/               # Theme, widgets, sizing constants
 │       ├── constants/        # Colors, icons, shadows
 │       ├── routes/           # Navigation configuration
@@ -79,7 +90,8 @@ FAPP/
 │
 └── docs/                     # Project documentation (PDF)
     ├── OPPR.pdf              # Objectives, Project Plan and Requirements
-    └── Solution_design.pdf   # Use cases, diagrams, wireframes, DB schema
+    ├── Solution_design.pdf   # Use cases, diagrams, wireframes, DB schema
+    └── logo.png              # Project logo
 ```
 
 ---
@@ -88,13 +100,13 @@ FAPP/
 
 ### Prerequisites
 
-| Tool | Version | Purpose |
+| Tool | Version | Install |
 |------|---------|---------|
-| Python | 3.11+ | Backend runtime |
-| Flutter | 3.29+ | Frontend framework |
-| Conda (optional) | any | Python environment management |
+| Python | 3.11+ | [python.org](https://www.python.org/downloads/) or `conda create -n fapp python=3.11` |
+| Flutter | 3.29+ | [flutter.dev/get-started](https://docs.flutter.dev/get-started/install) |
+| Google Chrome | any | For running the frontend in web mode |
 
-> **Database:** The project uses a shared remote PostgreSQL instance on [Neon](https://neon.tech) — no local database setup needed.
+> **📦 Database:** The project uses a shared remote PostgreSQL on [Neon](https://neon.tech). No local database installation needed — all team members connect to the same cloud instance.
 
 ### 1. Clone the repository
 
@@ -118,42 +130,51 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Edit `backend/.env` with the shared Neon database URL (ask a team member for the credentials):
+Edit `backend/.env` with the shared database credentials (ask a team member):
 
-```
-DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-PROJECT.region.neon.tech/neondb?sslmode=require
+```env
+DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-xxx.region.neon.tech/neondb?sslmode=require
 JWT_SECRET=fapp-dev-secret-2026-change-in-prod
 ```
 
-```bash
-# Run the server (creates tables + seeds categories automatically on first run)
-uvicorn app.main:app --reload
-```
-
-The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
-
-### 4. Run backend tests
+### 3. Start the backend
 
 ```bash
 cd backend
-python -m pytest tests/ -v
+uvicorn app.main:app --reload
 ```
 
-All 23 tests run against SQLite in-memory (no PostgreSQL needed for testing).
+The server will:
+- Create all database tables automatically on first run
+- Seed 6 default categories (Food, Transport, Entertainment, Health, Education, Other)
+- Serve the API at `http://localhost:8000`
+- Show interactive API docs at `http://localhost:8000/docs`
 
-### 5. Frontend setup
+### 4. Start the frontend
+
+Open a **second terminal**:
 
 ```bash
 cd frontend
-
-# Install Flutter dependencies
 flutter pub get
-
-# Run the app (connect a device or start an emulator first)
-flutter run
+flutter run -d chrome
 ```
 
-> **Note:** The Flutter app connects to `http://10.0.2.2:8000/api` by default (Android emulator). For physical devices, update `_baseUrl` in `lib/services/api_client.dart` to your machine's local IP.
+The app will open in Chrome and connect to the backend at `http://localhost:8000/api`.
+
+> **💡 Tip:** Both the backend and frontend must be running at the same time. Keep two terminals open.
+
+> **📱 Mobile:** To run on a physical Android device or emulator, the app auto-detects the platform and adjusts the API URL (`localhost` for web, `10.0.2.2` for Android emulator).
+
+### 5. Run backend tests
+
+```bash
+cd backend
+conda activate fapp
+python -m pytest tests/ -v
+```
+
+All 23 tests run against SQLite in-memory — no database connection needed for testing.
 
 ---
 
@@ -161,15 +182,15 @@ flutter run
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/api/auth/register` | Create new account | No |
-| POST | `/api/auth/login` | Login & get JWT | No |
-| GET | `/api/categories` | List all categories | No |
-| POST | `/api/expenses` | Create expense | Yes |
-| GET | `/api/expenses` | List expenses (with filters) | Yes |
-| POST | `/api/budgets` | Create monthly budget | Yes |
-| GET | `/api/budgets` | List budgets for month/year | Yes |
-| GET | `/api/dashboard` | Dashboard summary | Yes |
-| GET | `/health` | Health check | No |
+| `POST` | `/api/auth/register` | Create new account | ❌ |
+| `POST` | `/api/auth/login` | Login & get JWT token | ❌ |
+| `GET` | `/api/categories` | List all categories | ❌ |
+| `POST` | `/api/expenses` | Create expense | ✅ |
+| `GET` | `/api/expenses` | List expenses (filters: `start_date`, `end_date`, `category_id`) | ✅ |
+| `POST` | `/api/budgets` | Create monthly budget | ✅ |
+| `GET` | `/api/budgets` | List budgets (filters: `month`, `year`) | ✅ |
+| `GET` | `/api/dashboard` | Dashboard summary (spending, budgets, transactions) | ✅ |
+| `GET` | `/health` | Health check | ❌ |
 
 ---
 
@@ -179,23 +200,23 @@ flutter run
 - **FastAPI** — Async Python web framework
 - **SQLAlchemy 2.0** — ORM with mapped columns
 - **Alembic** — Database migrations
-- **PostgreSQL** — Relational database
+- **Neon (PostgreSQL)** — Serverless cloud database
 - **JWT (python-jose)** — Token-based authentication
 - **Pydantic v2** — Request/response validation
-- **pytest** — Testing framework
+- **pytest** — Testing framework (23 tests)
 
 ### Frontend
-- **Flutter 3.29** — Cross-platform UI framework
+- **Flutter 3.29** — Cross-platform UI framework (web, Android, iOS)
 - **Riverpod** — State management
-- **fl_chart** — Donut/pie charts
+- **fl_chart** — Donut/pie charts for spending visualization
 - **http** — REST API client
-- **shared_preferences** — Local JWT storage
+- **shared_preferences** — Local JWT token storage
 
 ---
 
 ## 📊 Database Schema
 
-Four main tables aligned with the Entity Relationship Diagram:
+Four main tables hosted on Neon, aligned with the Entity Relationship Diagram (see `docs/Solution_design.pdf`, p.11):
 
 | Table | Primary Key | Key Columns |
 |-------|-------------|-------------|
