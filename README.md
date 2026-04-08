@@ -100,13 +100,16 @@ FAPP/
 
 ### Prerequisites
 
-| Tool | Version | Install |
-|------|---------|---------|
-| Python | 3.11+ | [python.org](https://www.python.org/downloads/) or `conda create -n fapp python=3.11` |
-| Flutter | 3.29+ | [flutter.dev/get-started](https://docs.flutter.dev/get-started/install) |
-| Google Chrome | any | For running the frontend in web mode |
+**To use the app on Android:** Just download the APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases) — nothing else needed.
 
-> **📦 Database:** Shared remote PostgreSQL on [Neon](https://neon.tech) — no local DB needed.
+**To run the backend locally (optional):**
+
+| Tool | Version |
+|------|---------|
+| Python | 3.11+ |
+| conda | (recommended) |
+
+> **📦 Database:** Shared remote PostgreSQL on [Neon](https://neon.tech).
 >
 > **🌐 Backend:** Deployed on [Render](https://render.com) at [`https://fapp-api.onrender.com`](https://fapp-api.onrender.com/docs). Auto-redeploys on every push to `main`.
 
@@ -142,27 +145,18 @@ uvicorn app.main:app --reload
 
 API at `http://localhost:8000` | Docs at `http://localhost:8000/docs`
 
-### 3. Frontend (web)
+### 3. Frontend (Android APK)
 
-```bash
-cd frontend
-flutter pub get
-flutter run -d chrome
-```
-
-### 4. Frontend (Android APK)
-
-Download the pre-built APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases):
+**Easiest option:** Download the pre-built APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases):
 
 1. Go to [Releases](https://github.com/jaime-oriol/financial_app/releases)
 2. Download the latest `app-release.apk`
-3. Send to your phone and install
+3. Transfer to your Android phone and install
 
-> **📱 The APK connects directly to the deployed backend** — no local server needed. Install and use from anywhere.
+> **📱 The APK connects directly to the deployed backend** — no local setup needed.
+> **🔄 Auto-builds:** Every push to `main` automatically compiles a new APK to Releases.
 
-> **🔄 Auto-builds:** Every push to `main` automatically compiles a new APK and uploads it to Releases. Always grab the latest version there.
-
-### 5. Run backend tests
+### 4. Run backend tests
 
 ```bash
 cd backend
