@@ -1,5 +1,5 @@
 /// Pantalla de registro. Ref: Solution Design, wireframe 1 (Register/Onboarding).
-/// Campos: name, surname, age range, email, password. Checkbox terms.
+/// Avatar, form fields, terms checkbox, boton principal, link a login.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -76,72 +76,85 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final auth = ref.watch(authStateProvider);
 
     return Scaffold(
+      backgroundColor: white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(Sizes.xl),
+          padding: const EdgeInsets.symmetric(horizontal: Sizes.xl),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: Sizes.lg),
-                // Logo
-                Center(
-                  child: Image.asset('assets/logo.png', height: 80),
-                ),
-                const SizedBox(height: Sizes.lg),
-                // Titulo
-                Text(
-                  'Create your account',
-                  style: Theme.of(context).textTheme.headlineLarge,
-                ),
-                const SizedBox(height: Sizes.sm),
-                Text(
-                  'Start your financial journey today',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: grey1),
-                ),
                 const SizedBox(height: Sizes.xxl),
 
-                // Campos del formulario
-                TextFormField(
-                  controller: _nameCtrl,
-                  decoration: const InputDecoration(hintText: 'First name'),
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty ? 'Required' : null,
-                ),
-                const SizedBox(height: Sizes.md),
-                TextFormField(
-                  controller: _surnameCtrl,
-                  decoration: const InputDecoration(hintText: 'Last name'),
-                  validator: (v) =>
-                      v == null || v.trim().isEmpty ? 'Required' : null,
+                // Logo
+                Center(child: Image.asset('assets/logo.png', height: 72)),
+                const SizedBox(height: Sizes.xl),
+
+                // Titulo
+                Text('Create your account',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                    textAlign: TextAlign.center),
+                const SizedBox(height: Sizes.xs),
+                Text('Start your financial journey today',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(color: grey1),
+                    textAlign: TextAlign.center),
+                const SizedBox(height: Sizes.xxl),
+
+                // Full name row
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _nameCtrl,
+                        decoration:
+                            const InputDecoration(hintText: 'First name'),
+                        validator: (v) =>
+                            v == null || v.trim().isEmpty ? 'Required' : null,
+                      ),
+                    ),
+                    const SizedBox(width: Sizes.sm),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _surnameCtrl,
+                        decoration:
+                            const InputDecoration(hintText: 'Last name'),
+                        validator: (v) =>
+                            v == null || v.trim().isEmpty ? 'Required' : null,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: Sizes.md),
 
-                // Selector de fecha de nacimiento
+                // Age range / birthdate
                 GestureDetector(
                   onTap: _pickBirthdate,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: Sizes.lg,
-                      vertical: Sizes.md,
-                    ),
+                        horizontal: Sizes.lg, vertical: Sizes.md + 2),
                     decoration: BoxDecoration(
                       color: grey3,
-                      borderRadius:
-                          BorderRadius.circular(Sizes.borderRadius),
+                      borderRadius: BorderRadius.circular(Sizes.borderRadius),
                     ),
-                    child: Text(
-                      _birthdate != null
-                          ? '${_birthdate!.day}/${_birthdate!.month}/${_birthdate!.year}'
-                          : 'Birthdate',
-                      style: TextStyle(
-                        color: _birthdate != null ? primary : grey2,
-                        fontSize: 16,
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.calendar_today,
+                            size: 18, color: _birthdate != null ? primary : grey2),
+                        const SizedBox(width: Sizes.sm),
+                        Text(
+                          _birthdate != null
+                              ? '${_birthdate!.day}/${_birthdate!.month}/${_birthdate!.year}'
+                              : 'Age range',
+                          style: TextStyle(
+                            color: _birthdate != null ? primary : grey2,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -158,32 +171,41 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   },
                 ),
                 const SizedBox(height: Sizes.md),
+
                 TextFormField(
                   controller: _passwordCtrl,
                   decoration: const InputDecoration(hintText: 'Password'),
                   obscureText: true,
                   validator: (v) {
-                    if (v == null || v.length < 6) {
-                      return 'At least 6 characters';
-                    }
+                    if (v == null || v.length < 6) return 'At least 6 characters';
                     return null;
                   },
                 ),
-                const SizedBox(height: Sizes.lg),
+                const SizedBox(height: Sizes.md),
 
-                // Checkbox de terminos
+                // Terms
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Checkbox(
-                      value: _acceptedTerms,
-                      onChanged: (v) =>
-                          setState(() => _acceptedTerms = v ?? false),
-                      activeColor: secondary,
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Checkbox(
+                        value: _acceptedTerms,
+                        onChanged: (v) =>
+                            setState(() => _acceptedTerms = v ?? false),
+                        activeColor: secondary,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
                     ),
+                    const SizedBox(width: Sizes.sm),
                     Expanded(
                       child: Text(
                         'I agree to the Terms of Service and Privacy Policy',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: grey1),
                       ),
                     ),
                   ],
@@ -193,14 +215,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 // Error
                 if (auth.error != null)
                   Padding(
-                    padding: const EdgeInsets.only(bottom: Sizes.md),
-                    child: Text(
-                      auth.error!,
-                      style: const TextStyle(color: error, fontSize: 14),
-                    ),
+                    padding: const EdgeInsets.only(bottom: Sizes.sm),
+                    child: Text(auth.error!,
+                        style: const TextStyle(color: error, fontSize: 13)),
                   ),
 
-                // Boton de registro
+                // Submit
                 ElevatedButton(
                   onPressed: auth.loading ? null : _submit,
                   child: auth.loading
@@ -208,11 +228,28 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: white,
-                          ),
+                              strokeWidth: 2, color: white),
                         )
                       : const Text('Create account'),
+                ),
+                const SizedBox(height: Sizes.md),
+
+                // Google placeholder
+                OutlinedButton.icon(
+                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Google SSO coming soon')),
+                  ),
+                  icon: const Icon(Icons.g_mobiledata, size: 24),
+                  label: const Text('Continue with Google'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: primary,
+                    side: const BorderSide(color: grey2),
+                    padding: const EdgeInsets.all(Sizes.md),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(Sizes.borderRadiusLarge),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: Sizes.lg),
 
@@ -220,20 +257,21 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text('Already have an account? '),
+                    Text('Already have an account? ',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(color: grey1)),
                     GestureDetector(
                       onTap: () =>
                           Navigator.of(context).pushReplacementNamed('/login'),
-                      child: Text(
-                        'Sign in',
-                        style: TextStyle(
-                          color: secondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: Text('Sign in',
+                          style: TextStyle(
+                              color: secondary, fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
+                const SizedBox(height: Sizes.xl),
               ],
             ),
           ),
