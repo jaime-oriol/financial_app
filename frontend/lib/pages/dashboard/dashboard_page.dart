@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../constants/style.dart';
+import '../../model/dashboard.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../ui/device.dart';
 import '../../ui/widgets/default_container.dart';
@@ -199,9 +200,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     );
   }
 
-  double _totalSpent(List spendingByCategory) {
+  double _totalSpent(List<SpendingByCategory> items) {
     double total = 0;
-    for (final s in spendingByCategory) {
+    for (final s in items) {
       total += s.total;
     }
     return total;
