@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+"""Schema de categoria: solo respuesta (las categorias son seeds, no se crean via API)."""
+
+from pydantic import BaseModel
 
 
 class CategoryResponse(BaseModel):

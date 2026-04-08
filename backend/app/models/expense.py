@@ -1,3 +1,8 @@
+"""Modelo Expense: gasto individual registrado por un usuario.
+Referencia: Solution Design, ERD p.11, DB Schema p.12 — tabla EXPENSE.
+Relaciones: user_id -> Users (N:1), category_id -> Categories (N:1).
+"""
+
 from datetime import date, datetime
 from decimal import Decimal
 
@@ -19,7 +24,7 @@ class Expense(Base):
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     expense_date: Mapped[date] = mapped_column(Date, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=func.now()
+        DateTime, nullable=False, default=func.now()
     )
 
     user = relationship("User", back_populates="expenses")

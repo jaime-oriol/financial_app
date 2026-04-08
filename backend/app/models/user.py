@@ -1,3 +1,7 @@
+"""Modelo User: representa un usuario registrado en la aplicacion.
+Referencia: Solution Design, ERD p.11, DB Schema p.12 — tabla USERS.
+"""
+
 from datetime import date, datetime
 
 from sqlalchemy import Date, DateTime, Integer, String, func
@@ -14,10 +18,11 @@ class User(Base):
     surname: Mapped[str] = mapped_column(String(50), nullable=False)
     birthdate: Mapped[date] = mapped_column(Date, nullable=False)
     email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    password: Mapped[str] = mapped_column(String(100), nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False)  # bcrypt hash
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, server_default=func.now()
+        DateTime, nullable=False, default=func.now()
     )
 
-    expenses = relationship("Expense", back_populates="user")
-    budgets = relationship("Budget", back_populates="user")
+    # Relaciones 1:N con gastos y presupuestos
+    expenses = relationship("Expense", back_populates="user", cascade="all, delete-orphan")
+    budgets = relationship("Budget", back_populates="user", cascade="all, delete-orphan")

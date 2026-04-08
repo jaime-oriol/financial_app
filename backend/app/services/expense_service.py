@@ -1,8 +1,9 @@
-"""Logica de negocio para gastos. Separa la BD del router."""
+"""Logica de negocio para gastos. Separa las queries de BD de los routers."""
 
 from datetime import date
 from decimal import Decimal
 
+from sqlalchemy import extract, func
 from sqlalchemy.orm import Session
 
 from app.models.category import Category
@@ -11,7 +12,7 @@ from app.schemas.expense import ExpenseResponse
 
 
 def build_expense_response(expense: Expense, category: Category | None) -> ExpenseResponse:
-    """Construir response con nombre de categoria incluido."""
+    """Construir response enriquecido con nombre de categoria."""
     return ExpenseResponse(
         expense_id=expense.expense_id,
         user_id=expense.user_id,
@@ -31,7 +32,9 @@ def find_expenses(
     end_date: date | None = None,
     category_id: int | None = None,
 ) -> list[ExpenseResponse]:
-    """Buscar gastos del usuario con filtros opcionales (fecha, categoria)."""
+    """Buscar gastos del usuario con filtros opcionales (fecha, categoria).
+    Resuelve UC-04: View expense history (diagrama de secuencia 4).
+    """
     query = db.query(Expense).filter(Expense.user_id == user_id)
 
     if start_date:
@@ -54,9 +57,9 @@ def find_expenses(
 
 
 def get_total_spent(db: Session, user_id: int, category_id: int, month: int, year: int) -> Decimal:
-    """Calcular total gastado por usuario en una categoria para un mes/anio."""
-    from sqlalchemy import extract, func
-
+    """Calcular total gastado por usuario en una categoria para un mes/anio.
+    Usado por budget_service para calcular el progreso del presupuesto.
+    """
     result = (
         db.query(func.coalesce(func.sum(Expense.amount), 0))
         .filter(

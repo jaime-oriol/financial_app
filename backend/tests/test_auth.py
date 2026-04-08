@@ -11,7 +11,7 @@ Valida el diagrama de secuencia 1 del Solution Design:
 
 def test_register_success(client):
     """Registro exitoso devuelve 201 con token y user_id."""
-    response = client.post("/auth/register", json={
+    response = client.post("/api/auth/register", json={
         "name": "Alex",
         "surname": "Johnson",
         "birthdate": "2009-03-20",
@@ -33,21 +33,21 @@ def test_register_duplicate_email(client):
         "email": "duplicate@example.com",
         "password": "strongpass123",
     }
-    client.post("/auth/register", json=user_data)
-    response = client.post("/auth/register", json=user_data)
+    client.post("/api/auth/register", json=user_data)
+    response = client.post("/api/auth/register", json=user_data)
     assert response.status_code == 400
     assert "already in use" in response.json()["detail"]
 
 
 def test_register_missing_fields(client):
     """Campos incompletos devuelve 422."""
-    response = client.post("/auth/register", json={"name": "Alex"})
+    response = client.post("/api/auth/register", json={"name": "Alex"})
     assert response.status_code == 422
 
 
 def test_register_weak_password(client):
     """Password menor a 6 caracteres devuelve 422."""
-    response = client.post("/auth/register", json={
+    response = client.post("/api/auth/register", json={
         "name": "Alex",
         "surname": "Johnson",
         "birthdate": "2009-03-20",
@@ -59,14 +59,14 @@ def test_register_weak_password(client):
 
 def test_login_success(client):
     """Login correcto devuelve token."""
-    client.post("/auth/register", json={
+    client.post("/api/auth/register", json={
         "name": "Alex",
         "surname": "Johnson",
         "birthdate": "2009-03-20",
         "email": "login@example.com",
         "password": "strongpass123",
     })
-    response = client.post("/auth/login", json={
+    response = client.post("/api/auth/login", json={
         "email": "login@example.com",
         "password": "strongpass123",
     })
@@ -76,14 +76,14 @@ def test_login_success(client):
 
 def test_login_wrong_password(client):
     """Password incorrecta devuelve 401."""
-    client.post("/auth/register", json={
+    client.post("/api/auth/register", json={
         "name": "Alex",
         "surname": "Johnson",
         "birthdate": "2009-03-20",
         "email": "wrong@example.com",
         "password": "strongpass123",
     })
-    response = client.post("/auth/login", json={
+    response = client.post("/api/auth/login", json={
         "email": "wrong@example.com",
         "password": "badpass",
     })

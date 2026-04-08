@@ -1,3 +1,7 @@
+"""Modelo Category: tipos de gasto predefinidos (seeds).
+Referencia: Solution Design, ERD p.11, DB Schema p.12 — tabla CATEGORY.
+"""
+
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -12,5 +16,6 @@ class Category(Base):
     icon: Mapped[str | None] = mapped_column(String(100), nullable=True)
     description: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
+    # Relaciones 1:N con gastos y presupuestos
     expenses = relationship("Expense", back_populates="category")
     budgets = relationship("Budget", back_populates="category")

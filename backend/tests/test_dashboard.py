@@ -5,7 +5,7 @@ Valida diagrama de secuencia 5 del Solution Design.
 
 def test_dashboard_empty(client, auth_header):
     """Dashboard sin datos devuelve listas vacias (placeholder state)."""
-    response = client.get("/dashboard", headers=auth_header)
+    response = client.get("/api/dashboard", headers=auth_header)
     assert response.status_code == 200
     data = response.json()
     assert data["spending_by_category"] == []
@@ -16,7 +16,7 @@ def test_dashboard_empty(client, auth_header):
 def test_dashboard_with_data(client, auth_header):
     """Dashboard con gastos y presupuestos devuelve resumen correcto."""
     # Crear presupuesto
-    client.post("/budgets", json={
+    client.post("/api/budgets", json={
         "category_id": 1,
         "limit_amount": 200,
         "month": 4,
@@ -24,26 +24,26 @@ def test_dashboard_with_data(client, auth_header):
     }, headers=auth_header)
 
     # Crear gastos en abril 2026
-    client.post("/expenses", json={
+    client.post("/api/expenses", json={
         "amount": 25,
         "description": "Lunch",
         "expense_date": "2026-04-05",
         "category_id": 1,
     }, headers=auth_header)
-    client.post("/expenses", json={
+    client.post("/api/expenses", json={
         "amount": 15,
         "description": "Snack",
         "expense_date": "2026-04-07",
         "category_id": 1,
     }, headers=auth_header)
-    client.post("/expenses", json={
+    client.post("/api/expenses", json={
         "amount": 30,
         "description": "Movie",
         "expense_date": "2026-04-06",
         "category_id": 3,
     }, headers=auth_header)
 
-    response = client.get("/dashboard", headers=auth_header)
+    response = client.get("/api/dashboard", headers=auth_header)
     data = response.json()
 
     # Spending by category: Food=$40, Entertainment=$30
@@ -61,5 +61,5 @@ def test_dashboard_with_data(client, auth_header):
 
 def test_dashboard_unauthorized(client):
     """Dashboard sin token devuelve 403."""
-    response = client.get("/dashboard")
+    response = client.get("/api/dashboard")
     assert response.status_code == 403

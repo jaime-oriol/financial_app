@@ -1,3 +1,7 @@
+# === Test artifacts ===
+*.db
+.pytest_cache/
+
 # === Python ===
 __pycache__/
 *.py[cod]

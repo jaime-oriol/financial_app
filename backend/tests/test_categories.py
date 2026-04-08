@@ -3,7 +3,7 @@
 
 def test_get_categories(client):
     """Las 6 categorias seed estan disponibles."""
-    response = client.get("/categories")
+    response = client.get("/api/categories")
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 6

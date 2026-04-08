@@ -45,7 +45,7 @@ def client():
 @pytest.fixture
 def auth_token(client):
     """Registrar un usuario de prueba y devolver su token."""
-    response = client.post("/auth/register", json={
+    response = client.post("/api/auth/register", json={
         "name": "Test",
         "surname": "User",
         "birthdate": "2008-05-15",
