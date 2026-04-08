@@ -106,7 +106,9 @@ FAPP/
 | Flutter | 3.29+ | [flutter.dev/get-started](https://docs.flutter.dev/get-started/install) |
 | Google Chrome | any | For running the frontend in web mode |
 
-> **📦 Database:** The project uses a shared remote PostgreSQL on [Neon](https://neon.tech). No local database installation needed — all team members connect to the same cloud instance.
+> **📦 Database:** Shared remote PostgreSQL on [Neon](https://neon.tech) — no local DB needed.
+>
+> **🌐 Backend:** Deployed on [Render](https://render.com) at [`https://fapp-api.onrender.com`](https://fapp-api.onrender.com/docs). Auto-redeploys on every push to `main`.
 
 ### 1. Clone the repository
 
@@ -115,18 +117,15 @@ git clone https://github.com/jaime-oriol/financial_app.git
 cd financial_app
 ```
 
-### 2. Backend setup
+### 2. Backend (local development)
+
+Only needed if you want to run the backend locally. The production backend is already deployed.
 
 ```bash
-# Create and activate Python environment
 conda create -n fapp python=3.11 -y
 conda activate fapp
-
-# Install dependencies
 cd backend
 pip install -r requirements.txt
-
-# Configure environment variables
 cp .env.example .env
 ```
 
@@ -137,22 +136,13 @@ DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-xxx.region.neon.tech/neondb?s
 JWT_SECRET=fapp-dev-secret-2026-change-in-prod
 ```
 
-### 3. Start the backend
-
 ```bash
-cd backend
 uvicorn app.main:app --reload
 ```
 
-The server will:
-- Create all database tables automatically on first run
-- Seed 6 default categories (Food, Transport, Entertainment, Health, Education, Other)
-- Serve the API at `http://localhost:8000`
-- Show interactive API docs at `http://localhost:8000/docs`
+API at `http://localhost:8000` | Docs at `http://localhost:8000/docs`
 
-### 4. Start the frontend
-
-Open a **second terminal**:
+### 3. Frontend (web)
 
 ```bash
 cd frontend
@@ -160,11 +150,18 @@ flutter pub get
 flutter run -d chrome
 ```
 
-The app will open in Chrome and connect to the backend at `http://localhost:8000/api`.
+### 4. Frontend (Android APK)
 
-> **💡 Tip:** Both the backend and frontend must be running at the same time. Keep two terminals open.
+```bash
+cd frontend
+flutter build apk --release
+```
 
-> **📱 Mobile:** To run on a physical Android device or emulator, the app auto-detects the platform and adjusts the API URL (`localhost` for web, `10.0.2.2` for Android emulator).
+The APK will be at `frontend/build/app/outputs/flutter-apk/app-release.apk`. Send it to your phone and install.
+
+> **📱 The APK connects directly to the deployed backend** — no local server needed. Install and use from anywhere.
+
+> **🔄 CI/CD:** Every push to `main` auto-redeploys the backend on Render. The APK must be rebuilt manually after frontend changes.
 
 ### 5. Run backend tests
 

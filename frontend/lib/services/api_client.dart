@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiClient {
   // Release (APK): backend desplegado en Render
   // Debug web: localhost para desarrollo local
-  static const String _prodUrl = 'https://fapp-api.onrender.com/api';
+  static const String _prodUrl = 'https://fapp-api.onrender.com/api'; // Render deploy
   static const String _devUrl = 'http://localhost:8000/api';
   static String get _baseUrl => (kDebugMode && kIsWeb) ? _devUrl : _prodUrl;
   static const String _tokenKey = 'jwt_token';
