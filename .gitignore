@@ -1,6 +1,3 @@
-# === CLAUDE.md SIEMPRE TRACKEADO (nunca ignorar) ===
-!CLAUDE.md
-
 # === Python ===
 __pycache__/
 *.py[cod]
