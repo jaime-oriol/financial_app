@@ -174,58 +174,85 @@ class LessonsPage extends StatelessWidget {
           final total = m['lessons'] as int;
           final isDone = completed == total && total > 0;
 
+          final moduleColor = isDone ? accent : locked ? grey2 : secondary;
           return Padding(
             padding: const EdgeInsets.only(bottom: Sizes.sm),
-            child: DefaultContainer(
-              margin: EdgeInsets.zero,
-              child: Opacity(
-                opacity: locked ? 0.5 : 1.0,
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: isDone
-                            ? accent.withValues(alpha: 0.2)
-                            : locked
-                                ? grey3
-                                : secondary.withValues(alpha: 0.1),
-                        borderRadius:
-                            BorderRadius.circular(Sizes.borderRadius),
+            child: Opacity(
+              opacity: locked ? 0.45 : 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: white,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [defaultShadow],
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        decoration: BoxDecoration(
+                          color: moduleColor,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(14),
+                            bottomLeft: Radius.circular(14),
+                          ),
+                        ),
                       ),
-                      child: Icon(
-                        locked
-                            ? Icons.lock
-                            : isDone
-                                ? Icons.check
-                                : Icons.play_arrow,
-                        color: isDone ? accent : locked ? grey2 : secondary,
-                        size: 20,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(Sizes.md),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: moduleColor.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  locked ? Icons.lock_outline
+                                      : isDone ? Icons.check_rounded
+                                      : Icons.play_arrow_rounded,
+                                  color: moduleColor,
+                                  size: 18,
+                                ),
+                              ),
+                              const SizedBox(width: Sizes.md),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(m['title'] as String,
+                                        style: Theme.of(context).textTheme.titleSmall),
+                                    const SizedBox(height: 2),
+                                    Text('$completed / $total lessons',
+                                        style: Theme.of(context).textTheme.bodySmall),
+                                  ],
+                                ),
+                              ),
+                              if (isDone)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: Sizes.sm, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: accent.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text('Done',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelLarge
+                                          ?.copyWith(color: accent)),
+                                ),
+                              if (!isDone && !locked)
+                                const Icon(Icons.chevron_right, color: grey2, size: 20),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: Sizes.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(m['title'] as String,
-                              style: Theme.of(context).textTheme.titleSmall),
-                          Text('$completed / $total lessons',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(color: grey1)),
-                        ],
-                      ),
-                    ),
-                    if (isDone)
-                      Text('Done',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge
-                              ?.copyWith(color: accent)),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
