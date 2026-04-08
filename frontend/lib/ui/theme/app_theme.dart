@@ -10,14 +10,14 @@ class AppTheme {
     scaffoldBackgroundColor: background,
     fontFamily: 'Roboto',
     appBarTheme: const AppBarTheme(
-      backgroundColor: background,
+      backgroundColor: white,
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: true,
       iconTheme: IconThemeData(color: primary),
       titleTextStyle: TextStyle(
         color: primary,
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: FontWeight.w700,
       ),
     ),
@@ -26,13 +26,9 @@ class AppTheme {
       selectedItemColor: secondary,
       unselectedItemColor: grey2,
       type: BottomNavigationBarType.fixed,
-      selectedLabelStyle: const TextStyle(fontSize: 12),
-      unselectedLabelStyle: const TextStyle(fontSize: 12),
-    ),
-    floatingActionButtonTheme: const FloatingActionButtonThemeData(
-      backgroundColor: secondary,
-      foregroundColor: white,
-      shape: CircleBorder(),
+      elevation: 0,
+      selectedLabelStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+      unselectedLabelStyle: TextStyle(fontSize: 11),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
@@ -42,14 +38,16 @@ class AppTheme {
           return secondary;
         }),
         elevation: const WidgetStatePropertyAll(0),
-        padding: const WidgetStatePropertyAll(EdgeInsets.all(Sizes.lg)),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 14, horizontal: Sizes.xl),
+        ),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Sizes.borderRadiusLarge),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         textStyle: const WidgetStatePropertyAll(
-          TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
+          TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600),
         ),
       ),
     ),
@@ -57,20 +55,28 @@ class AppTheme {
       filled: true,
       fillColor: grey3,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(Sizes.borderRadius),
+        borderRadius: BorderRadius.circular(12),
         borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: secondary, width: 1.5),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: Sizes.lg,
-        vertical: Sizes.md,
+        vertical: 14,
       ),
-      hintStyle: const TextStyle(color: grey2),
+      hintStyle: const TextStyle(color: grey2, fontSize: 15),
     ),
     cardTheme: CardThemeData(
       color: white,
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Sizes.borderRadius),
+        borderRadius: BorderRadius.circular(14),
       ),
     ),
     dividerTheme: const DividerThemeData(
@@ -83,28 +89,32 @@ class AppTheme {
       contentTextStyle: const TextStyle(color: white, fontSize: 14),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(Sizes.borderRadius),
+        borderRadius: BorderRadius.circular(10),
       ),
     ),
+    chipTheme: ChipThemeData(
+      backgroundColor: grey3,
+      selectedColor: secondary.withValues(alpha: 0.15),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      side: BorderSide.none,
+      labelStyle: const TextStyle(fontSize: 13),
+    ),
     textTheme: const TextTheme(
-      // Display: titulos grandes (dashboard balance)
-      displayLarge: TextStyle(fontSize: 34.0, fontWeight: FontWeight.w700),
-      displayMedium: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w600),
-      // Headline: secciones
-      headlineLarge: TextStyle(fontSize: 24.0, fontWeight: FontWeight.w700),
-      headlineMedium: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600),
-      // Title: cards, items
-      titleLarge: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
-      titleMedium: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w600),
-      titleSmall: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500),
-      // Body: contenido
-      bodyLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400),
-      bodyMedium: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400),
-      bodySmall: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400),
-      // Label: badges, captions
-      labelLarge: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w600),
-      labelMedium: TextStyle(fontSize: 10.0, fontWeight: FontWeight.w400),
-      labelSmall: TextStyle(fontSize: 8.0, fontWeight: FontWeight.w600),
+      displayLarge: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w800, color: primary),
+      displayMedium: TextStyle(fontSize: 26.0, fontWeight: FontWeight.w700, color: primary),
+      headlineLarge: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w700, color: primary),
+      headlineMedium: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600, color: primary),
+      titleLarge: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w700, color: primary),
+      titleMedium: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w600, color: primary),
+      titleSmall: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500, color: primary),
+      bodyLarge: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w400, color: primary),
+      bodyMedium: TextStyle(fontSize: 14.0, fontWeight: FontWeight.w400, color: primary),
+      bodySmall: TextStyle(fontSize: 12.0, fontWeight: FontWeight.w400, color: grey1),
+      labelLarge: TextStyle(fontSize: 11.0, fontWeight: FontWeight.w600, color: grey1),
+      labelMedium: TextStyle(fontSize: 10.0, fontWeight: FontWeight.w400, color: grey1),
+      labelSmall: TextStyle(fontSize: 9.0, fontWeight: FontWeight.w600, color: grey2),
     ),
   );
 }

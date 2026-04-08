@@ -1,4 +1,4 @@
-/// Container reutilizable con sombra y bordes redondeados.
+/// Container reutilizable con sombra suave y bordes redondeados.
 import 'package:flutter/material.dart';
 
 import '../../constants/style.dart';
@@ -23,7 +23,7 @@ class DefaultContainer extends StatelessWidget {
       margin: margin,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(Sizes.borderRadius),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [defaultShadow],
       ),
       child: child,
