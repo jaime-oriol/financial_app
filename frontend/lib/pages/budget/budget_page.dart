@@ -148,41 +148,79 @@ class _BudgetPageState extends ConsumerState<BudgetPage> {
                     final color = categoryColors[b.categoryId] ?? grey2;
                     return Padding(
                       padding: const EdgeInsets.only(bottom: Sizes.sm),
-                      child: DefaultContainer(
-                        margin: EdgeInsets.zero,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  categoryIcons[b.categoryId] ?? Icons.category,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: white,
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: [defaultShadow],
+                        ),
+                        child: IntrinsicHeight(
+                          child: Row(
+                            children: [
+                              // Borde de color a la izquierda (como wireframe)
+                              Container(
+                                width: 4,
+                                decoration: BoxDecoration(
                                   color: color,
-                                  size: 20,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(14),
+                                    bottomLeft: Radius.circular(14),
+                                  ),
                                 ),
-                                const SizedBox(width: Sizes.sm),
-                                Expanded(
-                                  child: Text(b.categoryName ?? 'Category',
-                                      style: Theme.of(context).textTheme.titleSmall),
-                                ),
-                                Text(
-                                  '\$${b.spent.toStringAsFixed(0)} / \$${b.limitAmount.toStringAsFixed(0)}',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: Sizes.sm),
-                            ClipRRect(
-                              borderRadius:
-                                  BorderRadius.circular(Sizes.borderRadiusSmall),
-                              child: LinearProgressIndicator(
-                                value: (b.progress / 100).clamp(0.0, 1.0),
-                                backgroundColor: grey3,
-                                color: b.progress > 90 ? error : color,
-                                minHeight: 8,
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(Sizes.lg),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            categoryIcons[b.categoryId] ?? Icons.category,
+                                            color: color,
+                                            size: 20,
+                                          ),
+                                          const SizedBox(width: Sizes.sm),
+                                          Expanded(
+                                            child: Text(b.categoryName ?? 'Category',
+                                                style: Theme.of(context).textTheme.titleSmall),
+                                          ),
+                                          Text(
+                                            '\$${b.spent.toStringAsFixed(0)}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleSmall
+                                                ?.copyWith(
+                                                  color: b.progress > 90 ? error : primary,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                          Text(
+                                            ' / \$${b.limitAmount.toStringAsFixed(0)}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall
+                                                ?.copyWith(color: grey1),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: Sizes.sm),
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: LinearProgressIndicator(
+                                          value: (b.progress / 100).clamp(0.0, 1.0),
+                                          backgroundColor: grey3,
+                                          color: b.progress > 90 ? error : color,
+                                          minHeight: 6,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
