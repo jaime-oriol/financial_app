@@ -1,3 +1,5 @@
+"""Configuracion centralizada: carga variables de entorno o usa defaults."""
+
 from pydantic_settings import BaseSettings
 
 

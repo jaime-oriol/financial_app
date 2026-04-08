@@ -1,3 +1,5 @@
+"""Schemas de presupuestos: validacion de creacion y respuesta con progreso."""
+
 from datetime import datetime
 from decimal import Decimal
 

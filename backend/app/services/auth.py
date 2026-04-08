@@ -1,3 +1,5 @@
+"""Servicio de autenticacion: hash de passwords, JWT y dependencia de usuario."""
+
 from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, HTTPException, status

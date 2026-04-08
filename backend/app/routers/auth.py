@@ -1,3 +1,7 @@
+"""Endpoints de autenticacion: registro y login con JWT.
+Referencia: Solution Design, diagrama de secuencia 1 (Register Account).
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 

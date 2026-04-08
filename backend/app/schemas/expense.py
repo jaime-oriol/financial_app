@@ -1,3 +1,5 @@
+"""Schemas de gastos: validacion de creacion y formato de respuesta."""
+
 from datetime import date, datetime
 from decimal import Decimal
 

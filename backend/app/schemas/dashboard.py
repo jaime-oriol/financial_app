@@ -1,3 +1,5 @@
+"""Schemas del dashboard: gasto por categoria y resumen financiero."""
+
 from decimal import Decimal
 
 from pydantic import BaseModel

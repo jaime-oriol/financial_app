@@ -1,3 +1,5 @@
+"""Conexion a la base de datos: engine, session factory y base declarativa."""
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
