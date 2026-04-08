@@ -152,16 +152,15 @@ flutter run -d chrome
 
 ### 4. Frontend (Android APK)
 
-```bash
-cd frontend
-flutter build apk --release
-```
+Download the pre-built APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases):
 
-The APK will be at `frontend/build/app/outputs/flutter-apk/app-release.apk`. Send it to your phone and install.
+1. Go to [Releases](https://github.com/jaime-oriol/financial_app/releases)
+2. Download the latest `app-release.apk`
+3. Send to your phone and install
 
 > **📱 The APK connects directly to the deployed backend** — no local server needed. Install and use from anywhere.
 
-> **🔄 CI/CD:** Every push to `main` auto-redeploys the backend on Render. The APK must be rebuilt manually after frontend changes.
+> **🔄 Auto-builds:** Every push to `main` automatically compiles a new APK and uploads it to Releases. Always grab the latest version there.
 
 ### 5. Run backend tests
 
