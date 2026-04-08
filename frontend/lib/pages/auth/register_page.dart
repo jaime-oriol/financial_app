@@ -84,7 +84,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: Sizes.xxl),
+                const SizedBox(height: Sizes.lg),
+                // Logo
+                Center(
+                  child: Image.asset('assets/logo.png', height: 80),
+                ),
+                const SizedBox(height: Sizes.lg),
                 // Titulo
                 Text(
                   'Create your account',

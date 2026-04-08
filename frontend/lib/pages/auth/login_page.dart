@@ -52,7 +52,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: Sizes.xxl * 2),
+                const SizedBox(height: Sizes.xxl),
+                Center(
+                  child: Image.asset('assets/logo.png', height: 80),
+                ),
+                const SizedBox(height: Sizes.lg),
                 Text(
                   'Welcome back',
                   style: Theme.of(context).textTheme.headlineLarge,
