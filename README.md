@@ -100,14 +100,20 @@ FAPP/
 
 ### Prerequisites
 
-**To use the app on Android:** Just download the APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases) — nothing else needed.
+**To run the app in Chrome (web):**
+
+| Tool | Version |
+|------|---------|
+| Flutter | 3.29+ |
+| Google Chrome | (download [here](https://www.google.com/chrome/)) |
+
+**To use on Android phone:** Just download the APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases) — nothing else needed.
 
 **To run the backend locally (optional):**
 
 | Tool | Version |
 |------|---------|
 | Python | 3.11+ |
-| conda | (recommended) |
 
 > **📦 Database:** Shared remote PostgreSQL on [Neon](https://neon.tech).
 >
@@ -120,30 +126,27 @@ git clone https://github.com/jaime-oriol/financial_app.git
 cd financial_app
 ```
 
-### 2. Backend (local development)
+### 2. Frontend (Web in Chrome)
 
-Only needed if you want to run the backend locally. The production backend is already deployed.
+**Recommended for team testing — no mobile device needed.**
 
+First, install Flutter if not already installed:
 ```bash
-conda create -n fapp python=3.11 -y
-conda activate fapp
-cd backend
-pip install -r requirements.txt
-cp .env.example .env
+git clone https://github.com/flutter/flutter.git -b stable ~/flutter
+export PATH="$PATH:$HOME/flutter/bin"
+flutter --version
 ```
 
-Edit `backend/.env` with the shared database credentials (ask a team member):
-
-```env
-DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-xxx.region.neon.tech/neondb?sslmode=require
-JWT_SECRET=fapp-dev-secret-2026-change-in-prod
-```
-
+Then run the app:
 ```bash
-uvicorn app.main:app --reload
+cd frontend
+flutter pub get
+flutter run -d chrome
 ```
 
-API at `http://localhost:8000` | Docs at `http://localhost:8000/docs`
+This opens the app in Google Chrome at `http://localhost:9099`.
+
+**Press `r` to hot-reload after code changes, `q` to quit.**
 
 ### 3. Frontend (Android APK)
 
@@ -156,7 +159,32 @@ API at `http://localhost:8000` | Docs at `http://localhost:8000/docs`
 > **📱 The APK connects directly to the deployed backend** — no local setup needed.
 > **🔄 Auto-builds:** Every push to `main` automatically compiles a new APK to Releases.
 
-### 4. Run backend tests
+### 4. Backend (local development, optional)
+
+Only needed if you want to run the backend locally. The production backend is already deployed at [fapp-api.onrender.com](https://fapp-api.onrender.com/docs).
+
+```bash
+conda create -n fapp python=3.11 -y
+conda activate fapp
+cd backend
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+Edit `backend/.env` with shared database credentials (ask a team member):
+
+```env
+DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-xxx.region.neon.tech/neondb?sslmode=require
+JWT_SECRET=fapp-dev-secret-2026-change-in-prod
+```
+
+```bash
+uvicorn app.main:app --reload
+```
+
+API at `http://localhost:8000` | Docs at `http://localhost:8000/docs`
+
+### 5. Run backend tests
 
 ```bash
 cd backend
