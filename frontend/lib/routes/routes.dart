@@ -1,7 +1,4 @@
-/// Configuracion de rutas con onGenerateRoute y navegacion adaptativa.
-import 'dart:io';
-
-import 'package:flutter/cupertino.dart';
+/// Configuracion de rutas con onGenerateRoute.
 import 'package:flutter/material.dart';
 
 import '../pages/auth/login_page.dart';
@@ -28,9 +25,8 @@ Route<dynamic> makeRoute(RouteSettings settings) {
 }
 
 PageRoute _buildRoute(String? name, Widget page) {
-  final settings = RouteSettings(name: name);
-  if (Platform.isIOS) {
-    return CupertinoPageRoute(settings: settings, builder: (_) => page);
-  }
-  return MaterialPageRoute(settings: settings, builder: (_) => page);
+  return MaterialPageRoute(
+    settings: RouteSettings(name: name),
+    builder: (_) => page,
+  );
 }

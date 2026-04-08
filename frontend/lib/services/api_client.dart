@@ -1,12 +1,15 @@
 /// Cliente HTTP centralizado. Gestiona JWT, base URL y errores.
 /// Todos los providers usan esta clase para comunicarse con el backend.
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
-  // En desarrollo local: 10.0.2.2 para emulador Android, localhost para web
-  static const String _baseUrl = 'http://10.0.2.2:8000/api';
+  // Web usa localhost, Android emulator usa 10.0.2.2
+  static const String _baseUrl = kIsWeb
+      ? 'http://localhost:8000/api'
+      : 'http://10.0.2.2:8000/api';
   static const String _tokenKey = 'jwt_token';
   static const String _userIdKey = 'user_id';
 
