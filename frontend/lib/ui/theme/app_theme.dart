@@ -26,8 +26,8 @@ class AppTheme {
       selectedItemColor: secondary,
       unselectedItemColor: grey2,
       type: BottomNavigationBarType.fixed,
-      selectedFontSize: 12,
-      unselectedFontSize: 12,
+      selectedLabelStyle: const TextStyle(fontSize: 12),
+      unselectedLabelStyle: const TextStyle(fontSize: 12),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: secondary,

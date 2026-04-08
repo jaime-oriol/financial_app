@@ -1,6 +1,5 @@
 /// Provider de gastos: crear y listar con filtros.
 /// Ref: Solution Design, UC-02 Add Expense, UC-04 View Expense History.
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/expense.dart';

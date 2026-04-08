@@ -1,7 +1,6 @@
 /// Cliente HTTP centralizado. Gestiona JWT, base URL y errores.
 /// Todos los providers usan esta clase para comunicarse con el backend.
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 

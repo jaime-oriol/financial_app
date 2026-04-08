@@ -2,7 +2,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/category.dart';
-import '../services/api_client.dart';
 import 'auth_provider.dart';
 
 /// Lista de categorias cargadas del backend

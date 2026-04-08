@@ -1,6 +1,5 @@
 /// Provider de presupuestos: crear y listar con progreso.
 /// Ref: Solution Design, UC-03 Create Monthly Budget.
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../model/budget.dart';
