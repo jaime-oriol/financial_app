@@ -1,0 +1,37 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.0'
+
+      - name: Get dependencies
+        run: |
+          cd frontend
+          flutter pub get
+
+      - name: Build APK
+        run: |
+          cd frontend
+          flutter build apk --release
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: frontend/build/app/outputs/flutter-apk/app-release.apk
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: "FAPP APK - Auto-built from main branch"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
