@@ -89,9 +89,10 @@ FAPP/
 | Tool | Version | Purpose |
 |------|---------|---------|
 | Python | 3.11+ | Backend runtime |
-| PostgreSQL | 15+ | Database |
 | Flutter | 3.29+ | Frontend framework |
 | Conda (optional) | any | Python environment management |
+
+> **Database:** The project uses a shared remote PostgreSQL instance on [Neon](https://neon.tech) — no local database setup needed.
 
 ### 1. Clone the repository
 
@@ -111,20 +112,25 @@ conda activate fapp
 cd backend
 pip install -r requirements.txt
 
-# Create PostgreSQL database
-createdb fapp
-
 # Configure environment variables
 cp .env.example .env
-# Edit .env with your database URL and JWT secret
+```
 
-# Run the server (creates tables + seeds categories automatically)
+Edit `backend/.env` with the shared Neon database URL (ask a team member for the credentials):
+
+```
+DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-PROJECT.region.neon.tech/neondb?sslmode=require
+JWT_SECRET=fapp-dev-secret-2026-change-in-prod
+```
+
+```bash
+# Run the server (creates tables + seeds categories automatically on first run)
 uvicorn app.main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
 
-### 3. Run backend tests
+### 4. Run backend tests
 
 ```bash
 cd backend
@@ -133,7 +139,7 @@ python -m pytest tests/ -v
 
 All 23 tests run against SQLite in-memory (no PostgreSQL needed for testing).
 
-### 4. Frontend setup
+### 5. Frontend setup
 
 ```bash
 cd frontend
