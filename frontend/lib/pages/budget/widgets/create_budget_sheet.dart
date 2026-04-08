@@ -3,9 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../constants/style.dart';
-import '../../../model/category.dart';
 import '../../../providers/budgets_provider.dart';
+import '../../../ui/widgets/category_chip.dart';
 import '../../../providers/categories_provider.dart';
 import '../../../providers/dashboard_provider.dart';
 import '../../../ui/device.dart';
@@ -86,7 +85,14 @@ class _CreateBudgetSheetState extends ConsumerState<CreateBudgetSheet> {
                 data: (cats) => Wrap(
                   spacing: Sizes.sm,
                   runSpacing: Sizes.sm,
-                  children: cats.map((c) => _categoryChip(c)).toList(),
+                  children: cats
+                      .map((c) => CategoryChip(
+                            category: c,
+                            selected: _categoryId == c.categoryId,
+                            onSelected: () =>
+                                setState(() => _categoryId = c.categoryId),
+                          ))
+                      .toList(),
                 ),
               ),
               const SizedBox(height: Sizes.lg),
@@ -121,25 +127,4 @@ class _CreateBudgetSheetState extends ConsumerState<CreateBudgetSheet> {
     );
   }
 
-  Widget _categoryChip(Category cat) {
-    final selected = _categoryId == cat.categoryId;
-    final color = categoryColors[cat.categoryId] ?? grey2;
-
-    return ChoiceChip(
-      label: Text(cat.name),
-      selected: selected,
-      selectedColor: color.withValues(alpha: 0.3),
-      backgroundColor: grey3,
-      labelStyle: TextStyle(
-        color: selected ? primary : grey1,
-        fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-      ),
-      avatar: Icon(
-        categoryIcons[cat.categoryId] ?? Icons.category,
-        size: 18,
-        color: color,
-      ),
-      onSelected: (_) => setState(() => _categoryId = cat.categoryId),
-    );
-  }
 }
