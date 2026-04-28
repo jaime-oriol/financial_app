@@ -141,3 +141,11 @@ async def contribute_goal(goal_id: int, amount: float) -> dict:
 
 async def delete_goal(goal_id: int) -> None:
     await delete(f"/goals/{goal_id}")
+
+
+async def get_challenges() -> list[dict]:
+    return await get("/challenges")
+
+
+async def submit_attempt(challenge_id: int, payload: dict) -> dict:
+    return await post(f"/challenges/{challenge_id}/attempt", {"payload": payload})

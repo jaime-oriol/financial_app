@@ -53,8 +53,9 @@ async def profile_page():
                 refs["streak"] = _stat_card(
                     "Streak", "0", "local_fire_department", theme.WARNING
                 )
+                refs["xp"] = _stat_card("XP", "0", "auto_awesome", theme.SECONDARY)
                 refs["expenses"] = _stat_card(
-                    "Expenses", "0", "receipt_long", theme.SECONDARY
+                    "Expenses", "0", "receipt_long", theme.PRIMARY
                 )
                 refs["goals"] = _stat_card("Goals", "0", "flag", theme.ACCENT)
 
@@ -88,23 +89,24 @@ async def profile_page():
         refs["member"].text = ""
 
     refs["streak"].text = str(dashboard.get("streak", 0))
+    refs["xp"].text = str(dashboard.get("total_xp", 0))
     refs["expenses"].text = str(dashboard.get("total_expenses", 0))
     refs["goals"].text = str(len(goals))
 
 
 def _stat_card(label: str, value: str, icon: str, color: str) -> ui.label:
     """Crea un card de stat y devuelve la label del numero (mutable)."""
-    with ui.column().classes("flex-1 gap-1").style(
-        f"background: {theme.WHITE}; border-radius: 14px; padding: 14px; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.04); align-items: center; "
+    with ui.column().classes("flex-1 gap-0").style(
+        f"background: {theme.WHITE}; border-radius: 14px; padding: 12px 8px; "
+        "box-shadow: 0 2px 8px rgba(0,0,0,0.04); align-items: center; min-width: 0; "
         "transition: box-shadow 0.18s ease;"
     ):
-        ui.icon(icon).style(f"color: {color}; font-size: 22px;")
+        ui.icon(icon).style(f"color: {color}; font-size: 20px;")
         value_label = ui.label(value).classes("fapp-money").style(
-            f"color: {theme.PRIMARY}; font-size: 22px; font-weight: 800;"
+            f"color: {theme.PRIMARY}; font-size: 19px; font-weight: 800; margin-top: 4px;"
         )
         ui.label(label).style(
-            f"color: {theme.GREY_TEXT}; font-size: 11px; font-weight: 600; "
+            f"color: {theme.GREY_TEXT}; font-size: 10px; font-weight: 600; "
             "text-transform: uppercase; letter-spacing: 0.5px;"
         )
     return value_label

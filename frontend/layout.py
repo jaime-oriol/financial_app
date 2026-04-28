@@ -16,6 +16,7 @@ import theme
 NAV_ITEMS: list[tuple[str, str, str]] = [
     ("home", "Home", "/"),
     ("account_balance_wallet", "Budget", "/budget"),
+    ("emoji_events", "Challenges", "/challenges"),
     ("flag", "Goals", "/goals"),
     ("person", "Profile", "/profile"),
 ]
@@ -110,11 +111,11 @@ def _nav_item(icon: str, label: str, path: str, is_active: bool) -> None:
     color = theme.SECONDARY if is_active else theme.GREY_SOFT
     weight = "700" if is_active else "500"
     with ui.column().classes("items-center cursor-pointer gap-0").style(
-        "padding: 6px 14px; min-width: 64px;"
+        "padding: 6px 8px; min-width: 56px; transition: transform 0.15s ease;"
     ).on("click", lambda: ui.navigate.to(path)):
-        ui.icon(icon).style(f"color: {color}; font-size: 26px;")
+        ui.icon(icon).style(f"color: {color}; font-size: 24px;")
         ui.label(label).style(
-            f"color: {color}; font-size: 11px; font-weight: {weight};"
+            f"color: {color}; font-size: 10.5px; font-weight: {weight};"
         )
 
 

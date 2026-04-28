@@ -16,6 +16,9 @@ load_dotenv()
 import pages.auth   # noqa: F401, E402  /login, /register
 import pages.home   # noqa: F401, E402  /
 import pages.budget  # noqa: F401, E402  /budget
+import pages.challenges  # noqa: F401, E402  /challenges
+import pages.quiz  # noqa: F401, E402  /quiz/{id}
+import pages.simulation  # noqa: F401, E402  /simulation/{id}
 import pages.goals   # noqa: F401, E402  /goals
 import pages.profile  # noqa: F401, E402  /profile
 
