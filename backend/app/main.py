@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, SessionLocal, engine
-from app.routers import auth, budgets, categories, dashboard, expenses, goals
-from app.seed import seed_categories
+from app.routers import auth, budgets, categories, challenges, dashboard, expenses, goals
+from app.seed import seed_categories, seed_challenges
 
 
 @asynccontextmanager
@@ -17,6 +17,7 @@ async def lifespan(app: FastAPI):
     db = SessionLocal()
     try:
         seed_categories(db)
+        seed_challenges(db)
     finally:
         db.close()
     yield
@@ -45,6 +46,7 @@ app.include_router(expenses.router, prefix="/api")
 app.include_router(budgets.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
 app.include_router(goals.router, prefix="/api")
+app.include_router(challenges.router, prefix="/api")
 
 
 @app.get("/health")

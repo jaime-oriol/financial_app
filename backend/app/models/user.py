@@ -23,7 +23,8 @@ class User(Base):
         DateTime, nullable=False, default=func.now()
     )
 
-    # Relaciones 1:N con gastos, presupuestos y metas
+    # Relaciones 1:N
     expenses = relationship("Expense", back_populates="user", cascade="all, delete-orphan")
     budgets = relationship("Budget", back_populates="user", cascade="all, delete-orphan")
     goals = relationship("Goal", back_populates="user", cascade="all, delete-orphan")
+    challenge_attempts = relationship("ChallengeAttempt", back_populates="user", cascade="all, delete-orphan")

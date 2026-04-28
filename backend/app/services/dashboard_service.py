@@ -12,6 +12,7 @@ from app.models.category import Category
 from app.models.expense import Expense
 from app.schemas.dashboard import DashboardResponse, SpendingByCategory
 from app.services.budget_service import find_budgets
+from app.services.challenge_service import attempt_count, total_xp
 from app.services.expense_service import find_expenses
 
 
@@ -107,6 +108,10 @@ def get_dashboard(db: Session, user_id: int) -> DashboardResponse:
     # 6. Tendencia diaria de los ultimos 7 dias (para grafico de area en home)
     daily = compute_daily_spending(db, user_id, days=7)
 
+    # 7. XP acumulado y numero de challenges intentados (para profile)
+    xp = total_xp(db, user_id)
+    challenges_done = attempt_count(db, user_id)
+
     return DashboardResponse(
         spending_by_category=spending_by_category,
         budgets=budgets,
@@ -114,4 +119,6 @@ def get_dashboard(db: Session, user_id: int) -> DashboardResponse:
         streak=streak,
         total_expenses=total_expenses,
         daily_spending=daily,
+        total_xp=xp,
+        challenges_done=challenges_done,
     )

@@ -27,3 +27,5 @@ class DashboardResponse(BaseModel):
     streak: int = 0  # Dias consecutivos con al menos un gasto registrado
     total_expenses: int = 0  # Numero total de gastos del usuario
     daily_spending: list[DailyTotal] = []  # Ultimos 7 dias para trend chart
+    total_xp: int = 0  # XP acumulado por challenges completados
+    challenges_done: int = 0  # Numero de challenges intentados

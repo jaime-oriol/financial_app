@@ -4,6 +4,7 @@ from app.schemas.expense import ExpenseCreate, ExpenseResponse
 from app.schemas.budget import BudgetCreate, BudgetResponse
 from app.schemas.dashboard import SpendingByCategory, DashboardResponse
 from app.schemas.goal import GoalCreate, GoalContribute, GoalResponse
+from app.schemas.challenge import ChallengeResponse, AttemptCreate, AttemptResponse
 
 __all__ = [
     "UserRegister", "UserLogin", "UserResponse", "TokenResponse",
@@ -12,4 +13,5 @@ __all__ = [
     "BudgetCreate", "BudgetResponse",
     "SpendingByCategory", "DashboardResponse",
     "GoalCreate", "GoalContribute", "GoalResponse",
+    "ChallengeResponse", "AttemptCreate", "AttemptResponse",
 ]
