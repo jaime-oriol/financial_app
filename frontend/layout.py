@@ -47,11 +47,19 @@ def page_setup(title: str = "FAPP") -> None:
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             padding: 18px;
+            transition: box-shadow 0.18s ease;
+        }}
+        .fapp-card:hover {{
+            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
         }}
         .fapp-stat-num {{
             font-size: 28px;
             font-weight: 800;
             line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }}
+        .fapp-money {{
+            font-variant-numeric: tabular-nums;
         }}
         .fapp-section-label {{
             font-size: 11px;
@@ -60,6 +68,7 @@ def page_setup(title: str = "FAPP") -> None:
             color: {theme.GREY_TEXT};
             text-transform: uppercase;
         }}
+        html {{ scroll-behavior: smooth; }}
         """
     )
 
