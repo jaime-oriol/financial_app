@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: fapp-web
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: API_URL
+        value: https://fapp-api.onrender.com/api
+      - key: STORAGE_SECRET
+        sync: false
