@@ -1,6 +1,11 @@
 """Logica de negocio para challenges. Calcula XP server-side (no confiar en cliente)
-y enriquece challenges con el mejor intento del usuario.
+y enriquece challenges con el mejor intento del usuario. Orden:
+- Los no-completados primero (para guiar al usuario a probar nuevos).
+- Dentro de cada grupo, orden estable por user (parece personalizado y no salta
+  en refresco) pero distinto entre usuarios.
 """
+
+import random
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -10,14 +15,23 @@ from app.schemas.challenge import ChallengeResponse
 
 
 def list_with_status(db: Session, user_id: int) -> list[ChallengeResponse]:
-    """Listar todos los challenges con el mejor intento del usuario."""
-    challenges = db.query(Challenge).order_by(Challenge.challenge_id).all()
+    """Listar challenges con el mejor intento del usuario."""
+    challenges = db.query(Challenge).all()
     best_per_challenge = dict(
         db.query(ChallengeAttempt.challenge_id, func.max(ChallengeAttempt.xp_earned))
         .filter(ChallengeAttempt.user_id == user_id)
         .group_by(ChallengeAttempt.challenge_id)
         .all()
     )
+
+    # Shuffle estable por usuario — parece personalizado, no salta en refresco
+    rng = random.Random(user_id)
+    rng.shuffle(challenges)
+
+    not_done = [c for c in challenges if c.challenge_id not in best_per_challenge]
+    done = [c for c in challenges if c.challenge_id in best_per_challenge]
+    ordered = not_done + done
+
     return [
         ChallengeResponse(
             challenge_id=c.challenge_id,
@@ -28,7 +42,7 @@ def list_with_status(db: Session, user_id: int) -> list[ChallengeResponse]:
             best_xp=best_per_challenge.get(c.challenge_id, 0) or 0,
             completed=c.challenge_id in best_per_challenge,
         )
-        for c in challenges
+        for c in ordered
     ]
 
 

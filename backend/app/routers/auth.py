@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.user import TokenResponse, UserLogin, UserRegister, UserResponse
+from app.schemas.user import TokenResponse, UserLogin, UserRegister, UserResponse, UserUpdate
 from app.services.auth import create_token, get_current_user, hash_password, verify_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -40,6 +40,20 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
 @router.get("/me", response_model=UserResponse)
 def me(user: User = Depends(get_current_user)):
     """Devolver datos del usuario autenticado (para perfil y saludo)."""
+    return user
+
+
+@router.patch("/me", response_model=UserResponse)
+def update_me(
+    data: UserUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Actualizar campos del usuario (avatar de momento, transaccional)."""
+    if data.avatar is not None:
+        user.avatar = data.avatar
+    db.commit()
+    db.refresh(user)
     return user
 
 

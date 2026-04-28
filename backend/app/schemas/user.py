@@ -20,6 +20,11 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    """Patch parcial del usuario (de momento solo avatar)."""
+    avatar: str | None = Field(default=None, max_length=8)
+
+
 # --- Responses ---
 
 class UserResponse(BaseModel):
@@ -28,6 +33,7 @@ class UserResponse(BaseModel):
     surname: str
     birthdate: date
     email: str
+    avatar: str | None = None
     created_at: datetime
 
     model_config = {"from_attributes": True}

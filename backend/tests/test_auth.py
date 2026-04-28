@@ -111,3 +111,19 @@ def test_me_invalid_token(client):
     """GET /me con token invalido devuelve 401."""
     response = client.get("/api/auth/me", headers={"Authorization": "Bearer invalid"})
     assert response.status_code == 401
+
+
+def test_update_me_avatar(client, auth_header):
+    """PATCH /me actualiza el avatar y persiste."""
+    response = client.patch("/api/auth/me", json={"avatar": "🐱"}, headers=auth_header)
+    assert response.status_code == 200
+    assert response.json()["avatar"] == "🐱"
+    # GET /me devuelve el avatar persistido
+    me = client.get("/api/auth/me", headers=auth_header).json()
+    assert me["avatar"] == "🐱"
+
+
+def test_update_me_unauthorized(client):
+    """PATCH /me sin token devuelve 403."""
+    response = client.patch("/api/auth/me", json={"avatar": "🐶"})
+    assert response.status_code == 403

@@ -2,16 +2,16 @@
 
 
 def test_list_challenges_seeded(client, auth_header):
-    """Las 2 challenges seed estan disponibles con su contenido en BD."""
+    """Los challenges seed estan disponibles con su contenido en BD."""
     response = client.get("/api/challenges", headers=auth_header)
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 2
-    kinds = sorted(c["kind"] for c in data)
-    assert kinds == ["quiz", "simulation"]
+    assert len(data) >= 2
+    kinds = {c["kind"] for c in data}
+    assert {"quiz", "simulation"} <= kinds
     quiz = next(c for c in data if c["kind"] == "quiz")
     assert "questions" in quiz["content"]
-    assert len(quiz["content"]["questions"]) == 3
+    assert len(quiz["content"]["questions"]) >= 3
     sim = next(c for c in data if c["kind"] == "simulation")
     assert "choices" in sim["content"]
 

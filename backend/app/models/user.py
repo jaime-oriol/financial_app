@@ -19,6 +19,7 @@ class User(Base):
     birthdate: Mapped[date] = mapped_column(Date, nullable=False)
     email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     password: Mapped[str] = mapped_column(String(255), nullable=False)  # bcrypt hash
+    avatar: Mapped[str | None] = mapped_column(String(8), nullable=True)  # emoji preset
     created_at: Mapped[datetime] = mapped_column(
         DateTime, nullable=False, default=func.now()
     )
