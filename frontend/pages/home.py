@@ -9,7 +9,7 @@ Optimizaciones:
 """
 
 import asyncio
-from datetime import datetime
+from datetime import date, datetime
 
 from nicegui import ui
 
@@ -66,6 +66,7 @@ async def home_page():
             refs["budget_pct"].text = "—"
             refs["budget_pct"].style(f"color: {theme.GREY_SOFT};")
 
+        _render_trend(refs["trend"], dashboard.get("daily_spending", []))
         _render_recent(refs["recent"], dashboard.get("recent_transactions", []))
 
     with app_shell(active="/"):
@@ -108,6 +109,11 @@ async def home_page():
                     f"color: {theme.SECONDARY};"
                 )
 
+        # 7-day spending trend (chart de area, datos reales del backend)
+        with section("Last 7 days"):
+            with card():
+                refs["trend"] = ui.column().classes("w-full gap-1")
+
         # Recent transactions
         with section("Recent transactions"):
             refs["recent"] = ui.column().classes("w-full gap-2")
@@ -146,6 +152,101 @@ def _render_breakdown(stripe: ui.row, legend: ui.row, spending: list[dict], tota
                 ui.label(
                     f"{s['category_name']} {theme.fmt_money(s['total'], 0)}"
                 ).style("color: rgba(255,255,255,0.85); font-size: 11px;")
+
+
+def _render_trend(container: ui.column, daily: list[dict]) -> None:
+    """Area chart con gradiente del gasto diario en los ultimos 7 dias."""
+    container.clear()
+    if not daily:
+        with container:
+            empty_state("show_chart", "No data yet")
+        return
+    totals = [float(d["total"]) for d in daily]
+    if sum(totals) <= 0:
+        with container:
+            empty_state("show_chart", "Nothing spent in the last 7 days")
+        return
+    labels = [_short_label(d["date"]) for d in daily]
+    avg = sum(totals) / len(totals)
+    max_val = max(totals)
+    max_idx = totals.index(max_val)
+
+    with container:
+        with ui.row().classes("w-full justify-between items-baseline").style("padding: 0 4px;"):
+            ui.label(f"Avg {theme.fmt_money(avg, 0)} / day").style(
+                f"color: {theme.GREY_TEXT}; font-size: 12px; font-weight: 600;"
+            )
+            ui.label(
+                f"Peak {theme.fmt_money(max_val, 0)} on {labels[max_idx]}"
+            ).style(f"color: {theme.PRIMARY}; font-size: 12px; font-weight: 600;")
+        ui.echart(
+            {
+                "tooltip": {
+                    "trigger": "axis",
+                    "axisPointer": {
+                        "type": "line",
+                        "lineStyle": {"color": theme.SECONDARY, "width": 1, "type": "dashed"},
+                    },
+                    "backgroundColor": theme.PRIMARY,
+                    "borderColor": theme.PRIMARY,
+                    "padding": [6, 10],
+                    "textStyle": {"color": "#fff", "fontSize": 12},
+                    "formatter": "{b}<br/><strong>${c}</strong>",
+                },
+                "grid": {"left": 6, "right": 6, "top": 14, "bottom": 22},
+                "xAxis": {
+                    "type": "category",
+                    "data": labels,
+                    "axisLine": {"show": False},
+                    "axisTick": {"show": False},
+                    "axisLabel": {"color": theme.GREY_TEXT, "fontSize": 10},
+                },
+                "yAxis": {"show": False, "type": "value"},
+                "series": [
+                    {
+                        "type": "line",
+                        "data": totals,
+                        "smooth": True,
+                        "showSymbol": True,
+                        "symbol": "circle",
+                        "symbolSize": 7,
+                        "lineStyle": {"width": 3, "color": theme.SECONDARY},
+                        "itemStyle": {
+                            "color": theme.SECONDARY,
+                            "borderColor": "#fff",
+                            "borderWidth": 2,
+                        },
+                        "emphasis": {
+                            "scale": True,
+                            "itemStyle": {"borderWidth": 3},
+                        },
+                        "areaStyle": {
+                            "color": {
+                                "type": "linear",
+                                "x": 0, "y": 0, "x2": 0, "y2": 1,
+                                "colorStops": [
+                                    {"offset": 0, "color": theme.SECONDARY + "55"},
+                                    {"offset": 1, "color": theme.SECONDARY + "00"},
+                                ],
+                            },
+                        },
+                        "animationDuration": 600,
+                        "animationEasing": "cubicOut",
+                    }
+                ],
+            }
+        ).style("height: 150px; width: 100%;")
+
+
+def _short_label(d) -> str:
+    """'Apr 28' o 'Today' para el ultimo dia."""
+    try:
+        dd = date.fromisoformat(str(d)) if not isinstance(d, date) else d
+    except (ValueError, TypeError):
+        return str(d)
+    if dd == date.today():
+        return "Today"
+    return dd.strftime("%b %d")
 
 
 def _render_recent(container: ui.column, expenses: list[dict]) -> None:
