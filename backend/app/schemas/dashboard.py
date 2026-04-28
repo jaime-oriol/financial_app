@@ -1,5 +1,6 @@
-"""Schemas del dashboard: gasto por categoria, streak y resumen financiero."""
+"""Schemas del dashboard: gasto por categoria, streak, daily trend, resumen."""
 
+from datetime import date as date_type
 from decimal import Decimal
 
 from pydantic import BaseModel
@@ -14,9 +15,15 @@ class SpendingByCategory(BaseModel):
     total: Decimal
 
 
+class DailyTotal(BaseModel):
+    date: date_type
+    total: Decimal
+
+
 class DashboardResponse(BaseModel):
     spending_by_category: list[SpendingByCategory]
     budgets: list[BudgetResponse]
     recent_transactions: list[ExpenseResponse]
     streak: int = 0  # Dias consecutivos con al menos un gasto registrado
     total_expenses: int = 0  # Numero total de gastos del usuario
+    daily_spending: list[DailyTotal] = []  # Ultimos 7 dias para trend chart

@@ -33,6 +33,29 @@ def compute_streak(db: Session, user_id: int) -> int:
     return streak
 
 
+def compute_daily_spending(db: Session, user_id: int, days: int = 7) -> list[dict]:
+    """Total gastado por dia en los ultimos N dias (incluyendo hoy).
+    Rellena con 0 los dias sin gastos para que el chart sea continuo.
+    """
+    today = date.today()
+    start = today - timedelta(days=days - 1)
+    rows = (
+        db.query(Expense.expense_date, func.sum(Expense.amount).label("total"))
+        .filter(
+            Expense.user_id == user_id,
+            Expense.expense_date >= start,
+            Expense.expense_date <= today,
+        )
+        .group_by(Expense.expense_date)
+        .all()
+    )
+    by_date = {r.expense_date: Decimal(str(r.total)) for r in rows}
+    return [
+        {"date": start + timedelta(days=i), "total": by_date.get(start + timedelta(days=i), Decimal("0"))}
+        for i in range(days)
+    ]
+
+
 def get_dashboard(db: Session, user_id: int) -> DashboardResponse:
     """UC-05: View dashboard / simple analytics.
     Sequence: getSpendingByCategory -> getBudgetProgress -> getRecentTransactions
@@ -81,10 +104,14 @@ def get_dashboard(db: Session, user_id: int) -> DashboardResponse:
         .scalar()
     ) or 0
 
+    # 6. Tendencia diaria de los ultimos 7 dias (para grafico de area en home)
+    daily = compute_daily_spending(db, user_id, days=7)
+
     return DashboardResponse(
         spending_by_category=spending_by_category,
         budgets=budgets,
         recent_transactions=recent,
         streak=streak,
         total_expenses=total_expenses,
+        daily_spending=daily,
     )
