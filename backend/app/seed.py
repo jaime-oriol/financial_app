@@ -599,16 +599,22 @@ INITIAL_CHALLENGES = [
 
 
 def seed_categories(db: Session) -> None:
-    if db.query(Category).count() > 0:
-        return
-    for cat_data in INITIAL_CATEGORIES:
+    """Insertar categorias por nombre. Idempotente: anade solo las que falten."""
+    existing = {c.name for c in db.query(Category).all()}
+    new = [c for c in INITIAL_CATEGORIES if c["name"] not in existing]
+    for cat_data in new:
         db.add(Category(**cat_data))
-    db.commit()
+    if new:
+        db.commit()
 
 
 def seed_challenges(db: Session) -> None:
-    if db.query(Challenge).count() > 0:
-        return
-    for ch_data in INITIAL_CHALLENGES:
+    """Insertar challenges por titulo. Idempotente: anade solo los que falten,
+    asi anadir nuevos seeds en futuras versiones funciona sin perder datos.
+    """
+    existing = {c.title for c in db.query(Challenge).all()}
+    new = [c for c in INITIAL_CHALLENGES if c["title"] not in existing]
+    for ch_data in new:
         db.add(Challenge(**ch_data))
-    db.commit()
+    if new:
+        db.commit()
