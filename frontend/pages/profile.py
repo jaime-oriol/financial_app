@@ -59,6 +59,9 @@ async def profile_page():
                 )
                 refs["goals"] = _stat_card("Goals", "0", "flag", theme.ACCENT)
 
+        with section("Achievements"):
+            refs["achievements"] = ui.row().classes("w-full gap-2 flex-wrap")
+
         with section(top=18):
             ui.button(
                 "Log out", icon="logout", on_click=_logout
@@ -93,6 +96,8 @@ async def profile_page():
     refs["expenses"].text = str(dashboard.get("total_expenses", 0))
     refs["goals"].text = str(len(goals))
 
+    _render_achievements(refs["achievements"], dashboard.get("achievements", []))
+
 
 def _stat_card(label: str, value: str, icon: str, color: str) -> ui.label:
     """Crea un card de stat y devuelve la label del numero (mutable)."""
@@ -110,6 +115,36 @@ def _stat_card(label: str, value: str, icon: str, color: str) -> ui.label:
             "text-transform: uppercase; letter-spacing: 0.5px;"
         )
     return value_label
+
+
+def _render_achievements(container: ui.row, achievements: list[dict]) -> None:
+    """Grid de badges. Cada uno se calcula server-side desde BD."""
+    container.clear()
+    with container:
+        if not achievements:
+            ui.label("No achievements yet").style(
+                f"color: {theme.GREY_TEXT}; font-size: 12px; padding: 8px 4px;"
+            )
+            return
+        for a in achievements:
+            _achievement_chip(a)
+
+
+def _achievement_chip(a: dict) -> None:
+    earned = a["earned"]
+    color = a["color"]
+    bg = f"{color}1f" if earned else theme.GREY_BG
+    icon_color = color if earned else theme.GREY_SOFT
+    text_color = theme.PRIMARY if earned else theme.GREY_SOFT
+    with ui.column().classes("items-center gap-1").style(
+        f"background-color: {bg}; border-radius: 14px; padding: 12px 8px; "
+        f"min-width: 88px; flex: 1; "
+        f"opacity: {1.0 if earned else 0.6}; transition: transform 0.18s ease;"
+    ).tooltip(a["description"]):
+        ui.icon(a["icon"]).style(f"color: {icon_color}; font-size: 26px;")
+        ui.label(a["name"]).style(
+            f"color: {text_color}; font-size: 11px; font-weight: 600; text-align: center;"
+        )
 
 
 def _logout() -> None:
