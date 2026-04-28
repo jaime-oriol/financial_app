@@ -53,3 +53,21 @@ def get_expenses(
 ):
     """UC-04: View expense history with optional filters."""
     return find_expenses(db, user.user_id, start_date, end_date, category_id)
+
+
+@router.delete("/{expense_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_expense(
+    expense_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Eliminar un gasto del usuario (CRUD completo, transaccional)."""
+    expense = (
+        db.query(Expense)
+        .filter(Expense.expense_id == expense_id, Expense.user_id == user.user_id)
+        .first()
+    )
+    if not expense:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Expense not found")
+    db.delete(expense)
+    db.commit()

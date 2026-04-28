@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, SessionLocal, engine
-from app.routers import auth, budgets, categories, dashboard, expenses
+from app.routers import auth, budgets, categories, dashboard, expenses, goals
 from app.seed import seed_categories
 
 
@@ -44,6 +44,7 @@ app.include_router(categories.router, prefix="/api")
 app.include_router(expenses.router, prefix="/api")
 app.include_router(budgets.router, prefix="/api")
 app.include_router(dashboard.router, prefix="/api")
+app.include_router(goals.router, prefix="/api")
 
 
 @app.get("/health")

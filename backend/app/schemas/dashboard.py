@@ -1,4 +1,4 @@
-"""Schemas del dashboard: gasto por categoria y resumen financiero."""
+"""Schemas del dashboard: gasto por categoria, streak y resumen financiero."""
 
 from decimal import Decimal
 
@@ -18,3 +18,5 @@ class DashboardResponse(BaseModel):
     spending_by_category: list[SpendingByCategory]
     budgets: list[BudgetResponse]
     recent_transactions: list[ExpenseResponse]
+    streak: int = 0  # Dias consecutivos con al menos un gasto registrado
+    total_expenses: int = 0  # Numero total de gastos del usuario

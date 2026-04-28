@@ -75,3 +75,21 @@ def get_budgets(
     m = month or today.month
     y = year or today.year
     return find_budgets(db, user.user_id, m, y)
+
+
+@router.delete("/{budget_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_budget(
+    budget_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Eliminar un presupuesto del usuario (CRUD completo, transaccional)."""
+    budget = (
+        db.query(Budget)
+        .filter(Budget.budget_id == budget_id, Budget.user_id == user.user_id)
+        .first()
+    )
+    if not budget:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Budget not found")
+    db.delete(budget)
+    db.commit()
