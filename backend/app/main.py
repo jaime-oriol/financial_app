@@ -12,8 +12,12 @@ from app.seed import seed_categories, seed_challenges
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Crear tablas y ejecutar seeds al arrancar (solo prototipo, en produccion usar Alembic)."""
+    """Crear tablas, aplicar migraciones idempotentes y ejecutar seeds al arrancar.
+    Solo prototipo — en produccion habria que usar Alembic, pero aqui usamos
+    ALTER TABLE IF NOT EXISTS para no romper despliegues con tabla existente.
+    """
     Base.metadata.create_all(bind=engine)
+    _apply_inline_migrations()
     db = SessionLocal()
     try:
         seed_categories(db)
@@ -21,6 +25,23 @@ async def lifespan(app: FastAPI):
     finally:
         db.close()
     yield
+
+
+def _apply_inline_migrations() -> None:
+    """ALTER TABLE idempotente para columnas anadidas tras el create_all inicial.
+    Solo en Postgres — SQLite (tests) parte de tabla limpia con todas las columnas.
+    """
+    if engine.dialect.name != "postgresql":
+        return
+    statements = [
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar VARCHAR(8)",
+    ]
+    for sql in statements:
+        try:
+            with engine.begin() as conn:
+                conn.exec_driver_sql(sql)
+        except Exception as exc:  # noqa: BLE001 — pragmatico, no debe tirar el server
+            print(f"[migration skipped] {sql} -> {exc}")
 
 
 app = FastAPI(
