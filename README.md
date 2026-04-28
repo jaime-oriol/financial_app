@@ -29,8 +29,9 @@ All transactional. No mocked or hardcoded data.
 - **Auth** — JWT register/login with email + password
 - **Dashboard** — total spending this month, real streak (consecutive days with expenses), 7-day spending trend chart, recent transactions
 - **Budget tracker** — donut chart with center total, per-category progress bars, add/delete expenses, create/delete budgets
+- **Challenges** — quiz + simulation challenges. Content stored in DB, attempts persisted, XP earned per attempt
 - **Savings goals** — create goals with target + deadline, add/withdraw money via dialog, behind-pace warning derived from real progress vs time elapsed
-- **Profile** — real stats (streak, expense count, goal count, member since), logout
+- **Profile** — real stats (streak, XP, expense count, goal count, member since), logout
 
 ### Use cases covered
 
@@ -42,6 +43,7 @@ All transactional. No mocked or hardcoded data.
 | UC-04 | View Expense History | ✅ |
 | UC-05 | View Dashboard / Analytics | ✅ |
 | Extra | Savings Goals (transactional +/-) | ✅ |
+| Extra | Challenges (quiz + simulation, attempts persisted, XP) | ✅ |
 | Extra | Real streak from expense history | ✅ |
 | Extra | Full CRUD (delete expenses, budgets, goals) | ✅ |
 
@@ -73,6 +75,9 @@ financial_app/
 │       ├── auth.py           # /login, /register
 │       ├── home.py           # / (dashboard with trend chart)
 │       ├── budget.py         # /budget (donut + bars + CRUD)
+│       ├── challenges.py     # /challenges (hub: quiz + simulation cards)
+│       ├── quiz.py           # /quiz/{id} (transactional)
+│       ├── simulation.py     # /simulation/{id} (transactional)
 │       ├── goals.py          # /goals (transactional +/-)
 │       └── profile.py        # /profile (real stats, logout)
 │
@@ -156,6 +161,8 @@ python -m pytest tests/ -v
 | `POST` | `/api/goals` | Create goal | ✅ |
 | `POST` | `/api/goals/{id}/contribute` | Add or withdraw amount | ✅ |
 | `DELETE` | `/api/goals/{id}` | Delete goal | ✅ |
+| `GET`  | `/api/challenges` | List challenges with user status | ✅ |
+| `POST` | `/api/challenges/{id}/attempt` | Submit attempt (XP server-side) | ✅ |
 | `GET`  | `/health` | Health check | ❌ |
 
 ---
