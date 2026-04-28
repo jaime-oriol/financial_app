@@ -19,6 +19,7 @@ class Challenge(Base):
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     content: Mapped[dict] = mapped_column(JSON, nullable=False)
     xp_reward: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    level: Mapped[int] = mapped_column(Integer, nullable=False, default=1)  # 1=Beginner, 2=Intermediate, 3=Advanced
 
     attempts = relationship("ChallengeAttempt", back_populates="challenge", cascade="all, delete-orphan")
 

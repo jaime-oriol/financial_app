@@ -1,11 +1,14 @@
-"""Logica de negocio para challenges. Calcula XP server-side (no confiar en cliente)
-y enriquece challenges con el mejor intento del usuario. Orden:
-- Los no-completados primero (para guiar al usuario a probar nuevos).
-- Dentro de cada grupo, orden estable por user (parece personalizado y no salta
-  en refresco) pero distinto entre usuarios.
+"""Logica de negocio para challenges.
+- Calcula XP server-side (no confiar en cliente).
+- Enriquece cada challenge con: best_xp, completed, locked.
+- Locked: un challenge de nivel N esta bloqueado si el usuario no ha completado
+  al menos UNLOCK_THRESHOLD challenges del nivel N-1. Nivel 1 siempre desbloqueado.
+- Orden de salida: por nivel asc, dentro del nivel los no-completados antes que
+  los completados, mezclados estable por user_id para sensacion de personalizacion.
 """
 
 import random
+from collections import Counter
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -14,9 +17,14 @@ from app.models.challenge import Challenge, ChallengeAttempt
 from app.schemas.challenge import ChallengeResponse
 
 
+# Nivel N+1 se desbloquea cuando el usuario completa este numero del nivel N.
+UNLOCK_THRESHOLD = 3
+
+
 def list_with_status(db: Session, user_id: int) -> list[ChallengeResponse]:
-    """Listar challenges con el mejor intento del usuario."""
+    """Listar challenges con el progreso real del usuario y los locks."""
     challenges = db.query(Challenge).all()
+
     best_per_challenge = dict(
         db.query(ChallengeAttempt.challenge_id, func.max(ChallengeAttempt.xp_earned))
         .filter(ChallengeAttempt.user_id == user_id)
@@ -24,13 +32,25 @@ def list_with_status(db: Session, user_id: int) -> list[ChallengeResponse]:
         .all()
     )
 
-    # Shuffle estable por usuario — parece personalizado, no salta en refresco
+    # Cuantos completados por nivel (necesario para decidir locks)
+    completed_by_level: Counter[int] = Counter()
+    for c in challenges:
+        if c.challenge_id in best_per_challenge:
+            completed_by_level[c.level] += 1
+
+    def is_locked(level: int) -> bool:
+        if level <= 1:
+            return False
+        return completed_by_level[level - 1] < UNLOCK_THRESHOLD
+
+    # Shuffle estable por usuario antes de agrupar — pequena variedad personalizada
     rng = random.Random(user_id)
     rng.shuffle(challenges)
 
-    not_done = [c for c in challenges if c.challenge_id not in best_per_challenge]
-    done = [c for c in challenges if c.challenge_id in best_per_challenge]
-    ordered = not_done + done
+    # Orden final: nivel asc, dentro del nivel no-completados antes que completados
+    challenges.sort(
+        key=lambda c: (c.level, c.challenge_id in best_per_challenge)
+    )
 
     return [
         ChallengeResponse(
@@ -39,10 +59,12 @@ def list_with_status(db: Session, user_id: int) -> list[ChallengeResponse]:
             title=c.title,
             content=c.content,
             xp_reward=c.xp_reward,
+            level=c.level,
             best_xp=best_per_challenge.get(c.challenge_id, 0) or 0,
             completed=c.challenge_id in best_per_challenge,
+            locked=is_locked(c.level),
         )
-        for c in ordered
+        for c in challenges
     ]
 
 

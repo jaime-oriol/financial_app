@@ -34,7 +34,11 @@ def _apply_inline_migrations() -> None:
     if engine.dialect.name != "postgresql":
         return
     statements = [
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar VARCHAR(8)",
+        # Avatar: anadir si falta, ampliar tipo a TEXT (antes VARCHAR(8) para emoji)
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT",
+        "ALTER TABLE users ALTER COLUMN avatar TYPE TEXT",
+        # Level en challenges (default 1)
+        "ALTER TABLE challenges ADD COLUMN IF NOT EXISTS level INTEGER NOT NULL DEFAULT 1",
     ]
     for sql in statements:
         try:

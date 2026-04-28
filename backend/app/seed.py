@@ -22,6 +22,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Money Basics",
         "xp_reward": 30,
+        "level": 1,
         "content": {
             "questions": [
                 {
@@ -54,6 +55,7 @@ INITIAL_CHALLENGES = [
         "kind": "simulation",
         "title": "Smart Spending",
         "xp_reward": 25,
+        "level": 1,
         "content": {
             "scenario": "You received $200 from your part-time job. You need to cover essentials AND save for your headphone goal.",
             "budget": 200,
@@ -90,6 +92,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Smart Saver",
         "xp_reward": 30,
+        "level": 2,
         "content": {
             "questions": [
                 {
@@ -127,6 +130,7 @@ INITIAL_CHALLENGES = [
         "kind": "simulation",
         "title": "Friday Night",
         "xp_reward": 25,
+        "level": 1,
         "content": {
             "scenario": "It's Friday and you have $50 cash. Friends invite you to a concert ($35) and you also need to save for your laptop goal.",
             "budget": 50,
@@ -163,6 +167,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Needs vs Wants",
         "xp_reward": 30,
+        "level": 1,
         "content": {
             "questions": [
                 {
@@ -200,6 +205,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Emergency Fund 101",
         "xp_reward": 30,
+        "level": 2,
         "content": {
             "questions": [
                 {
@@ -227,6 +233,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Compound Interest",
         "xp_reward": 30,
+        "level": 3,
         "content": {
             "questions": [
                 {
@@ -264,6 +271,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Credit Cards 101",
         "xp_reward": 30,
+        "level": 3,
         "content": {
             "questions": [
                 {
@@ -301,6 +309,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Spotting Scams",
         "xp_reward": 30,
+        "level": 2,
         "content": {
             "questions": [
                 {
@@ -338,6 +347,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Investing for Beginners",
         "xp_reward": 30,
+        "level": 3,
         "content": {
             "questions": [
                 {
@@ -375,6 +385,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Smart Shopping",
         "xp_reward": 30,
+        "level": 2,
         "content": {
             "questions": [
                 {
@@ -417,6 +428,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Debt vs Savings",
         "xp_reward": 30,
+        "level": 3,
         "content": {
             "questions": [
                 {
@@ -459,6 +471,7 @@ INITIAL_CHALLENGES = [
         "kind": "quiz",
         "title": "Subscriptions Trap",
         "xp_reward": 30,
+        "level": 2,
         "content": {
             "questions": [
                 {
@@ -491,6 +504,7 @@ INITIAL_CHALLENGES = [
         "kind": "simulation",
         "title": "Birthday Cash",
         "xp_reward": 25,
+        "level": 1,
         "content": {
             "scenario": "Your relatives gave you $100 for your birthday. You have a savings goal but also haven't treated yourself in a while.",
             "budget": 100,
@@ -527,6 +541,7 @@ INITIAL_CHALLENGES = [
         "kind": "simulation",
         "title": "First Paycheck",
         "xp_reward": 25,
+        "level": 2,
         "content": {
             "scenario": "Your first summer job paid $500. You've been waiting for this. Rent goes to your parents ($150) and the rest is up to you.",
             "budget": 500,
@@ -563,6 +578,7 @@ INITIAL_CHALLENGES = [
         "kind": "simulation",
         "title": "Phone Upgrade",
         "xp_reward": 25,
+        "level": 2,
         "content": {
             "scenario": "Your phone still works but a friend just got the new model. Tempting. You've saved $400 toward a trip.",
             "budget": 400,
@@ -609,12 +625,21 @@ def seed_categories(db: Session) -> None:
 
 
 def seed_challenges(db: Session) -> None:
-    """Insertar challenges por titulo. Idempotente: anade solo los que falten,
-    asi anadir nuevos seeds en futuras versiones funciona sin perder datos.
+    """Insertar challenges por titulo y sincronizar nivel/xp si cambia en el seed.
+    Idempotente: no toca los attempts del usuario, solo metadata del challenge.
     """
-    existing = {c.title for c in db.query(Challenge).all()}
-    new = [c for c in INITIAL_CHALLENGES if c["title"] not in existing]
-    for ch_data in new:
-        db.add(Challenge(**ch_data))
-    if new:
+    existing = {c.title: c for c in db.query(Challenge).all()}
+    changed = False
+    for ch_data in INITIAL_CHALLENGES:
+        title = ch_data["title"]
+        if title in existing:
+            current = existing[title]
+            new_level = ch_data.get("level", 1)
+            if current.level != new_level:
+                current.level = new_level
+                changed = True
+        else:
+            db.add(Challenge(**ch_data))
+            changed = True
+    if changed:
         db.commit()

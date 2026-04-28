@@ -16,8 +16,10 @@ class ChallengeResponse(BaseModel):
     title: str
     content: dict[str, Any]
     xp_reward: int
+    level: int = 1  # 1=Beginner, 2=Intermediate, 3=Advanced
     best_xp: int = 0  # Mejor XP del usuario en este reto
     completed: bool = False  # Si el usuario ya hizo al menos un intento
+    locked: bool = False  # True si el nivel anterior no esta desbloqueado
 
     model_config = {"from_attributes": True}
 

@@ -110,3 +110,33 @@ def test_challenges_unauthorized(client):
     """Sin token devuelve 403."""
     response = client.get("/api/challenges")
     assert response.status_code == 403
+
+
+def test_levels_l1_always_unlocked(client, auth_header):
+    """Sin intentos, todos los nivel 1 estan desbloqueados; los superiores no."""
+    response = client.get("/api/challenges", headers=auth_header)
+    data = response.json()
+    l1 = [c for c in data if c["level"] == 1]
+    higher = [c for c in data if c["level"] > 1]
+    assert l1, "Tiene que haber al menos un challenge de nivel 1"
+    assert all(c["locked"] is False for c in l1)
+    assert all(c["locked"] is True for c in higher)
+
+
+def test_levels_unlock_by_completing_three(client, auth_header):
+    """Tras completar 3 challenges de nivel 1, los de nivel 2 se desbloquean."""
+    response = client.get("/api/challenges", headers=auth_header)
+    l1_ids = [c["challenge_id"] for c in response.json() if c["level"] == 1]
+    assert len(l1_ids) >= 3, "Necesitamos >=3 seeds de nivel 1"
+
+    for cid in l1_ids[:3]:
+        client.post(
+            f"/api/challenges/{cid}/attempt",
+            json={"payload": {"score": 1, "total": 3}},
+            headers=auth_header,
+        )
+
+    after = client.get("/api/challenges", headers=auth_header).json()
+    l2 = [c for c in after if c["level"] == 2]
+    assert l2, "Tiene que haber challenges de nivel 2 en el seed"
+    assert all(c["locked"] is False for c in l2)

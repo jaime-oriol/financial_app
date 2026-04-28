@@ -21,8 +21,11 @@ class UserLogin(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    """Patch parcial del usuario (de momento solo avatar)."""
-    avatar: str | None = Field(default=None, max_length=8)
+    """Patch parcial del usuario. Avatar se acepta como data URL base64 (foto)
+    o como string vacio para resetear. Limitado en backend a ~200KB para no
+    saturar la BD ni la respuesta JSON.
+    """
+    avatar: str | None = Field(default=None, max_length=200_000)
 
 
 # --- Responses ---
