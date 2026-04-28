@@ -45,7 +45,8 @@ async def home_page():
             ui.notify(f"Error: {e.message}", type="negative")
             return
 
-        refs["greeting"].text = f"{_greeting()}, {me['name']}!"
+        avatar = me.get("avatar") or "👋"
+        refs["greeting"].text = f"{avatar}  {_greeting()}, {me['name']}!"
 
         spending = dashboard.get("spending_by_category", [])
         total = sum(float(s["total"]) for s in spending)
@@ -67,7 +68,7 @@ async def home_page():
             refs["budget_pct"].style(f"color: {theme.GREY_SOFT};")
 
         _render_trend(refs["trend"], dashboard.get("daily_spending", []))
-        _render_recent(refs["recent"], dashboard.get("recent_transactions", []))
+        _render_recent(refs["recent"], dashboard.get("recent_transactions", []), reload)
 
     with app_shell(active="/"):
         # Header con saludo + total del mes (gradiente sutil)
@@ -249,15 +250,30 @@ def _short_label(d) -> str:
     return dd.strftime("%b %d")
 
 
-def _render_recent(container: ui.column, expenses: list[dict]) -> None:
+def _render_recent(container: ui.column, expenses: list[dict], reload) -> None:
     container.clear()
     with container:
         if not expenses:
             with card():
-                empty_state(
-                    "receipt_long",
-                    "No expenses yet. Tap the + button to add your first one.",
-                )
+                with ui.column().classes("w-full items-center gap-2").style(
+                    "padding: 24px 16px;"
+                ):
+                    ui.icon("receipt_long").style(
+                        f"color: {theme.GREY_SOFT}; font-size: 48px;"
+                    )
+                    ui.label("No expenses yet").style(
+                        f"color: {theme.PRIMARY}; font-size: 14px; font-weight: 600;"
+                    )
+                    ui.label("Tap below to add your first one").style(
+                        f"color: {theme.GREY_TEXT}; font-size: 12px; text-align: center;"
+                    )
+                    ui.button(
+                        "Add expense", icon="add",
+                        on_click=lambda: dialogs.show_add_expense(on_success=reload),
+                    ).props("unelevated no-caps rounded").style(
+                        f"background-color: {theme.SECONDARY}; color: white; "
+                        "margin-top: 8px;"
+                    )
             return
         with card(padding=8):
             for i, e in enumerate(expenses):

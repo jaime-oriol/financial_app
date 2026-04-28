@@ -43,31 +43,37 @@ def _dialog_title(text: str) -> None:
 
 
 def _category_chip_group(categories: list[dict]) -> dict:
-    """Chips de categoria con seleccion unica. Single source of truth + un solo
-    update path: al hacer click, repinta TODOS desde state['selected_id'].
+    """Chips de categoria con seleccion unica. Visual claro: el seleccionado
+    pinta del color de su categoria (relleno solido) con icono y texto blancos;
+    los no-seleccionados quedan en gris suave. Usamos `flat` + style con
+    !important para anular los defaults de Quasar (que pintaria todos azul).
     """
     state = {"selected_id": None}
     chips_data: list[tuple[int, "ui.button", str]] = []
 
     def repaint() -> None:
         for cat_id, chip, color in chips_data:
-            if cat_id == state["selected_id"]:
+            is_sel = cat_id == state["selected_id"]
+            if is_sel:
                 chip.style(
-                    f"background-color: {color}33; color: {theme.PRIMARY}; "
-                    f"border: 1.5px solid {color}; font-weight: 600;"
+                    f"background: {color} !important; color: white !important; "
+                    f"font-weight: 700; box-shadow: 0 2px 8px {color}66; "
+                    "transform: scale(1.02); transition: all 0.15s ease;"
                 )
             else:
                 chip.style(
-                    f"background-color: {theme.GREY_BG}; color: {theme.GREY_TEXT}; "
-                    "border: 1.5px solid transparent; font-weight: 500;"
+                    f"background: {theme.GREY_BG} !important; "
+                    f"color: {theme.GREY_TEXT} !important; "
+                    "font-weight: 500; box-shadow: none; transform: scale(1); "
+                    "transition: all 0.15s ease;"
                 )
 
-    with ui.row().classes("w-full gap-1 flex-wrap"):
+    with ui.row().classes("w-full gap-2 flex-wrap"):
         for cat in categories:
             color = theme.category_color(cat["category_id"])
             chip = ui.button(
                 cat["name"], icon=theme.category_icon(cat["category_id"])
-            ).props("dense no-caps rounded unelevated")
+            ).props("dense no-caps rounded flat")
             chips_data.append((cat["category_id"], chip, color))
 
             def make_handler(cid: int = cat["category_id"]):
@@ -269,6 +275,67 @@ async def show_contribute_goal(goal_id: int, sign: int, on_success: OnSuccess = 
                 ui.notify(f"Error: {e.message}", type="negative")
 
         _dialog_actions(dialog, "Confirm", submit)
+
+    dialog.open()
+
+
+AVATAR_OPTIONS = [
+    "🦊", "🐱", "🐻", "🐼", "🐸", "🐰", "🦁", "🐨",
+    "🌟", "🚀", "💎", "🎯", "🔥", "⚡", "🏆", "🎨",
+]
+
+
+async def show_avatar_picker(current: str | None, on_success: OnSuccess = None) -> None:
+    """Selector de avatar emoji. Se persiste via PATCH /auth/me."""
+    state = {"selected": current}
+
+    with ui.dialog() as dialog, _dialog_card():
+        _dialog_title("Choose your avatar")
+        ui.label("Pick an emoji that represents you").style(
+            f"color: {theme.GREY_TEXT}; font-size: 12px; margin-bottom: 8px;"
+        )
+
+        grid = ui.grid(columns=8).classes("w-full gap-2")
+
+        def repaint() -> None:
+            grid.clear()
+            with grid:
+                for emoji in AVATAR_OPTIONS:
+                    is_sel = state["selected"] == emoji
+                    bg = theme.SECONDARY if is_sel else theme.GREY_BG
+                    label_color = theme.WHITE if is_sel else theme.PRIMARY
+                    cell = ui.element("div").classes(
+                        "cursor-pointer flex items-center justify-center"
+                    ).style(
+                        f"width: 100%; aspect-ratio: 1; border-radius: 12px; "
+                        f"background: {bg}; font-size: 24px; "
+                        f"box-shadow: {('0 2px 8px ' + theme.SECONDARY + '66') if is_sel else 'none'}; "
+                        f"color: {label_color}; transition: all 0.15s ease;"
+                    )
+                    with cell:
+                        ui.label(emoji).style("font-size: 24px; line-height: 1;")
+                    cell.on("click", lambda e=emoji: _select(e))
+
+        def _select(emoji: str) -> None:
+            state["selected"] = emoji
+            repaint()
+
+        repaint()
+
+        async def submit() -> None:
+            if not state["selected"]:
+                ui.notify("Pick an emoji first", type="warning")
+                return
+            try:
+                await api.update_avatar(state["selected"])
+                dialog.close()
+                ui.notify("Avatar updated", type="positive")
+                if on_success:
+                    await on_success()
+            except api.ApiException as e:
+                ui.notify(f"Error: {e.message}", type="negative")
+
+        _dialog_actions(dialog, "Save", submit)
 
     dialog.open()
 

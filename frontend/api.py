@@ -62,6 +62,10 @@ async def get_me() -> dict:
     return await get("/auth/me")
 
 
+async def update_avatar(avatar: str) -> dict:
+    return await _request("PATCH", "/auth/me", json={"avatar": avatar})
+
+
 async def register(name: str, surname: str, birthdate: str, email: str, password: str) -> dict:
     return await post(
         "/auth/register",

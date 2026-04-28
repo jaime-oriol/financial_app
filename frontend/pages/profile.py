@@ -8,6 +8,7 @@ from datetime import datetime
 from nicegui import ui
 
 import api
+import dialogs
 import state
 import theme
 from layout import app_shell, card, require_auth, section
@@ -26,17 +27,43 @@ async def profile_page():
                 f"color: {theme.PRIMARY}; font-size: 24px; font-weight: 800;"
             )
 
+        async def reload_profile() -> None:
+            try:
+                me = await api.get_me()
+            except api.ApiException:
+                return
+            _set_avatar(refs["avatar_label"], me.get("avatar"))
+            refs["name"].text = f"{me['name']} {me['surname']}"
+
         with section(top=8):
             with card():
                 with ui.row().classes("w-full items-center gap-3"):
-                    with ui.element("div").style(
+                    avatar_circle = ui.element("div").classes(
+                        "cursor-pointer relative"
+                    ).style(
                         f"background: {theme.GREY_BG}; width: 64px; height: 64px; "
                         "border-radius: 50%; display: flex; align-items: center; "
-                        "justify-content: center;"
-                    ):
-                        ui.icon("person").style(
-                            f"color: {theme.SECONDARY}; font-size: 36px;"
+                        "justify-content: center; transition: transform 0.15s ease;"
+                    ).tooltip("Tap to change avatar")
+                    avatar_circle.on(
+                        "click",
+                        lambda: dialogs.show_avatar_picker(
+                            refs.get("current_avatar"), on_success=reload_profile
+                        ),
+                    )
+                    with avatar_circle:
+                        refs["avatar_label"] = ui.label("👤").style(
+                            "font-size: 36px; line-height: 1;"
                         )
+                        # Edit pencil overlay
+                        with ui.element("div").style(
+                            f"position: absolute; bottom: 0; right: 0; "
+                            f"background: {theme.SECONDARY}; color: white; "
+                            "width: 22px; height: 22px; border-radius: 50%; "
+                            "display: flex; align-items: center; justify-content: center; "
+                            "border: 2px solid white;"
+                        ):
+                            ui.icon("edit").style("color: white; font-size: 12px;")
                     with ui.column().classes("flex-1 gap-0").style("min-width: 0;"):
                         refs["name"] = ui.label("Loading...").style(
                             f"color: {theme.PRIMARY}; font-size: 17px; font-weight: 700;"
@@ -85,6 +112,8 @@ async def profile_page():
 
     refs["name"].text = f"{me['name']} {me['surname']}"
     refs["email"].text = me["email"]
+    refs["current_avatar"] = me.get("avatar")
+    _set_avatar(refs["avatar_label"], me.get("avatar"))
     try:
         created = datetime.fromisoformat(me["created_at"].replace("Z", "+00:00"))
         refs["member"].text = f"Member since {created.strftime('%b %Y')}"
@@ -145,6 +174,11 @@ def _achievement_chip(a: dict) -> None:
         ui.label(a["name"]).style(
             f"color: {text_color}; font-size: 11px; font-weight: 600; text-align: center;"
         )
+
+
+def _set_avatar(label: ui.label, avatar: str | None) -> None:
+    """Mostrar emoji si tiene, fallback a icon person."""
+    label.text = avatar if avatar else "👤"
 
 
 def _logout() -> None:
