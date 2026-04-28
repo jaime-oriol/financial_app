@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import Base, get_db
 from app.main import app
-from app.seed import seed_categories
+from app.seed import seed_categories, seed_challenges
 
 # SQLite en memoria para tests (no necesita PostgreSQL)
 TEST_DB_URL = "sqlite:///./test.db"
@@ -32,6 +32,7 @@ def setup_db():
     Base.metadata.create_all(bind=engine)
     db = TestSession()
     seed_categories(db)
+    seed_challenges(db)
     db.close()
     yield
     Base.metadata.drop_all(bind=engine)

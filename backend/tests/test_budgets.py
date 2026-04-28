@@ -74,3 +74,23 @@ def test_get_budgets_empty(client, auth_header):
     response = client.get("/api/budgets?month=4&year=2026", headers=auth_header)
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_delete_budget(client, auth_header):
+    """Eliminar presupuesto y verificar que no aparece."""
+    create = client.post("/api/budgets", json={
+        "category_id": 1, "limit_amount": 100, "month": 4, "year": 2026,
+    }, headers=auth_header)
+    budget_id = create.json()["budget_id"]
+
+    response = client.delete(f"/api/budgets/{budget_id}", headers=auth_header)
+    assert response.status_code == 204
+
+    listed = client.get("/api/budgets?month=4&year=2026", headers=auth_header).json()
+    assert listed == []
+
+
+def test_delete_missing_budget(client, auth_header):
+    """Eliminar budget inexistente devuelve 404."""
+    response = client.delete("/api/budgets/9999", headers=auth_header)
+    assert response.status_code == 404

@@ -20,6 +20,15 @@ class DailyTotal(BaseModel):
     total: Decimal
 
 
+class Achievement(BaseModel):
+    id: str
+    name: str
+    icon: str
+    color: str
+    description: str
+    earned: bool
+
+
 class DashboardResponse(BaseModel):
     spending_by_category: list[SpendingByCategory]
     budgets: list[BudgetResponse]
@@ -29,3 +38,4 @@ class DashboardResponse(BaseModel):
     daily_spending: list[DailyTotal] = []  # Ultimos 7 dias para trend chart
     total_xp: int = 0  # XP acumulado por challenges completados
     challenges_done: int = 0  # Numero de challenges intentados
+    achievements: list[Achievement] = []  # Badges calculados desde BD

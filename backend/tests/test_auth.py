@@ -88,3 +88,26 @@ def test_login_wrong_password(client):
         "password": "badpass",
     })
     assert response.status_code == 401
+
+
+def test_me_returns_current_user(client, auth_header):
+    """GET /me devuelve los datos del usuario autenticado."""
+    response = client.get("/api/auth/me", headers=auth_header)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["email"] == "test@example.com"
+    assert data["name"] == "Test"
+    assert data["surname"] == "User"
+    assert "created_at" in data
+
+
+def test_me_unauthorized(client):
+    """GET /me sin token devuelve 403."""
+    response = client.get("/api/auth/me")
+    assert response.status_code == 403
+
+
+def test_me_invalid_token(client):
+    """GET /me con token invalido devuelve 401."""
+    response = client.get("/api/auth/me", headers={"Authorization": "Bearer invalid"})
+    assert response.status_code == 401

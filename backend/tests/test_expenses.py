@@ -99,6 +99,29 @@ def test_get_expenses_filter_by_category(client, auth_header):
     assert data[0]["category_name"] == "Food"
 
 
+def test_delete_expense(client, auth_header):
+    """Eliminar gasto y verificar que ya no aparece en GET."""
+    create = client.post("/api/expenses", json={
+        "amount": 10,
+        "description": "Delete me",
+        "expense_date": "2026-04-08",
+        "category_id": 1,
+    }, headers=auth_header)
+    expense_id = create.json()["expense_id"]
+
+    response = client.delete(f"/api/expenses/{expense_id}", headers=auth_header)
+    assert response.status_code == 204
+
+    listed = client.get("/api/expenses", headers=auth_header).json()
+    assert all(e["expense_id"] != expense_id for e in listed)
+
+
+def test_delete_missing_expense(client, auth_header):
+    """Eliminar expense inexistente devuelve 404."""
+    response = client.delete("/api/expenses/9999", headers=auth_header)
+    assert response.status_code == 404
+
+
 def test_get_expenses_filter_by_date(client, auth_header):
     """Filtrar por rango de fechas funciona correctamente."""
     client.post("/api/expenses", json={

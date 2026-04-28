@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.models.category import Category
 from app.models.expense import Expense
 from app.schemas.dashboard import DashboardResponse, SpendingByCategory
+from app.services.achievements_service import compute_achievements
 from app.services.budget_service import find_budgets
 from app.services.challenge_service import attempt_count, total_xp
 from app.services.expense_service import find_expenses
@@ -112,6 +113,9 @@ def get_dashboard(db: Session, user_id: int) -> DashboardResponse:
     xp = total_xp(db, user_id)
     challenges_done = attempt_count(db, user_id)
 
+    # 8. Achievements computados desde BD (badges para profile)
+    achievements = compute_achievements(db, user_id, streak)
+
     return DashboardResponse(
         spending_by_category=spending_by_category,
         budgets=budgets,
@@ -121,4 +125,5 @@ def get_dashboard(db: Session, user_id: int) -> DashboardResponse:
         daily_spending=daily,
         total_xp=xp,
         challenges_done=challenges_done,
+        achievements=achievements,
     )
