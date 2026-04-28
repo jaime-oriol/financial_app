@@ -21,18 +21,18 @@ jobs:
 
       - name: Get dependencies
         run: |
-          cd frontend
+          cd frontend_v2
           flutter pub get
 
       - name: Build APK
         run: |
-          cd frontend
+          cd frontend_v2
           flutter build apk --release
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: frontend/build/app/outputs/flutter-apk/app-release.apk
+          files: frontend_v2/build/app/outputs/flutter-apk/app-release.apk
           tag_name: v${{ github.run_number }}
           name: Release v${{ github.run_number }}
           body: "FAPP APK - Auto-built from main branch"
