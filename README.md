@@ -2,13 +2,13 @@
 
 <img src="./docs/logo.png" width="120" alt="FAPP logo">
 
-# 💰 FAPP — Financial App
+# FAPP — Financial App
 
 **Financial literacy app for teenagers (13–18)**
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Flutter](https://img.shields.io/badge/Flutter-3.29-02569B?logo=flutter)](https://flutter.dev/)
+[![NiceGUI](https://img.shields.io/badge/NiceGUI-2.13-3b9eff)](https://nicegui.io/)
 [![Neon](https://img.shields.io/badge/Neon-PostgreSQL-00e599?logo=postgresql)](https://neon.tech/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -16,108 +16,82 @@
 
 ---
 
-## 📖 About
+## About
 
-FAPP is a mobile application designed to help teenagers understand and practice basic financial skills — budgeting, saving, and responsible spending — through interactive tools and gamified learning.
+FAPP is a web app designed to help teenagers understand and practice basic financial skills — budgeting, saving, and responsible spending — through real, transactional tracking and savings goals.
 
-Built as part of an academic project by **3:2 Analytics**, the app bridges the gap in financial education for young users (ages 13–18) by combining real expense tracking with engaging lessons, quizzes, and simulations.
+Academic project by **3:2 Analytics** (2026). Backend in FastAPI on Render, frontend in pure Python (NiceGUI) — no JS/CSS to write, deploys as a single process.
 
-## ✨ Features
+## Features
 
-### 🏦 Core (Backend + Frontend)
-- **User Registration & Login** — JWT authentication with email/password
-- **Expense Tracking** — Log expenses by amount, description, date and category
-- **Budget Management** — Set monthly spending limits per category with real-time progress
-- **Dashboard** — Spending by category chart, budget progress bars, recent transactions
-- **6 Preset Categories** — Food, Transport, Entertainment, Health, Education, Other
+All transactional. No mocked or hardcoded data.
 
-### 📚 Gamification
-- **Financial Lessons** — Structured modules: Budgeting basics, Needs vs. Wants, Saving money, etc.
-- **Quiz** — Multiple-choice questions with instant feedback, explanations, and XP rewards
-- **Financial Simulation** — Real-life scenario ($200 budget split) with outcome cards
-- **Daily Challenges** — Quick quizzes to earn XP
-- **Achievement Badges** — First Saver, Hot Streak, Budget Pro
-- **Savings Goals** — Visual goal tracking with behind-pace warnings
+- **Auth** — JWT register/login with email + password
+- **Dashboard** — total spending this month, real streak (consecutive days with expenses), 7-day spending trend chart, recent transactions
+- **Budget tracker** — donut chart with center total, per-category progress bars, add/delete expenses, create/delete budgets
+- **Savings goals** — create goals with target + deadline, add/withdraw money via dialog, behind-pace warning derived from real progress vs time elapsed
+- **Profile** — real stats (streak, expense count, goal count, member since), logout
 
-### 🎯 Aligned with Use Cases
+### Use cases covered
+
 | UC | Feature | Status |
 |----|---------|--------|
-| UC-01 | Register Account | ✅ Functional |
-| UC-02 | Add Expense (manual) | ✅ Functional |
-| UC-03 | Create Monthly Budget | ✅ Functional |
-| UC-04 | View Expense History | ✅ Functional |
-| UC-05 | View Dashboard / Analytics | ✅ Functional |
+| UC-01 | Register Account | ✅ |
+| UC-02 | Add Expense (manual) | ✅ |
+| UC-03 | Create Monthly Budget | ✅ |
+| UC-04 | View Expense History | ✅ |
+| UC-05 | View Dashboard / Analytics | ✅ |
+| Extra | Savings Goals (transactional +/-) | ✅ |
+| Extra | Real streak from expense history | ✅ |
+| Extra | Full CRUD (delete expenses, budgets, goals) | ✅ |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
-FAPP/
-├── backend/                  # Python FastAPI REST API
-│   ├── app/
-│   │   ├── models/           # SQLAlchemy ORM (User, Category, Expense, Budget)
-│   │   ├── schemas/          # Pydantic validation (request/response)
-│   │   ├── routers/          # API endpoints (auth, expenses, budgets, dashboard)
-│   │   ├── services/         # Business logic layer
-│   │   ├── main.py           # FastAPI app entry point
-│   │   ├── config.py         # Environment settings
-│   │   ├── database.py       # DB connection & session
-│   │   └── seed.py           # Initial category data
-│   ├── alembic/              # Database migrations
-│   ├── tests/                # 23 pytest tests
-│   └── requirements.txt
+financial_app/
+├── backend/                  # FastAPI REST API
+│   └── app/
+│       ├── models/           # User, Category, Expense, Budget, Goal
+│       ├── schemas/          # Pydantic request/response
+│       ├── routers/          # auth, expenses, budgets, dashboard, goals
+│       ├── services/         # auth, expense, budget, goal, dashboard
+│       ├── main.py           # FastAPI app + CORS + lifespan seed
+│       ├── config.py
+│       ├── database.py
+│       └── seed.py           # 6 preset categories
 │
-├── frontend/                 # Flutter cross-platform app
-│   ├── assets/               # Logo and images
-│   └── lib/
-│       ├── model/            # Data models (User, Category, Expense, Budget, Dashboard)
-│       ├── services/         # API client (HTTP + JWT)
-│       ├── providers/        # Riverpod state management
-│       ├── pages/            # UI screens
-│       │   ├── auth/         # Register & Login
-│       │   ├── dashboard/    # Home with spending summary
-│       │   ├── budget/       # Budget tracker with donut chart
-│       │   ├── lessons/      # Financial education modules
-│       │   ├── quiz/         # Multiple-choice quiz with XP
-│       │   ├── simulation/   # Financial decision scenario
-│       │   ├── goals/        # Savings goal tracker
-│       │   └── profile/      # User profile & settings
-│       ├── ui/               # Theme, widgets, sizing constants
-│       ├── constants/        # Colors, icons, shadows
-│       ├── routes/           # Navigation configuration
-│       └── main.dart
+├── frontend/                 # NiceGUI Python web app
+│   ├── app.py                # Entry point + page registration
+│   ├── api.py                # HTTP client (httpx + JWT)
+│   ├── state.py              # Session storage (cookies)
+│   ├── theme.py              # Colors, icons, money formatting
+│   ├── layout.py             # App shell, bottom nav, helpers
+│   ├── dialogs.py            # Reusable transactional dialogs
+│   └── pages/
+│       ├── auth.py           # /login, /register
+│       ├── home.py           # / (dashboard with trend chart)
+│       ├── budget.py         # /budget (donut + bars + CRUD)
+│       ├── goals.py          # /goals (transactional +/-)
+│       └── profile.py        # /profile (real stats, logout)
 │
-└── docs/                     # Project documentation (PDF)
-    ├── OPPR.pdf              # Objectives, Project Plan and Requirements
-    ├── Solution_design.pdf   # Use cases, diagrams, wireframes, DB schema
-    └── logo.png              # Project logo
+├── frontend_v2/              # OLD Flutter frontend (kept for reference)
+└── docs/                     # OPPR.pdf, Solution_design.pdf, logo.png
 ```
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-
-**To run the app in Chrome (web):**
-
-| Tool | Version |
-|------|---------|
-| Flutter | 3.29+ |
-| Google Chrome | (download [here](https://www.google.com/chrome/)) |
-
-**To use on Android phone:** Just download the APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases) — nothing else needed.
-
-**To run the backend locally (optional):**
 
 | Tool | Version |
 |------|---------|
 | Python | 3.11+ |
 
-> **📦 Database:** Shared remote PostgreSQL on [Neon](https://neon.tech).
->
-> **🌐 Backend:** Deployed on [Render](https://render.com) at [`https://fapp-api.onrender.com`](https://fapp-api.onrender.com/docs). Auto-redeploys on every push to `main`.
+> **Database:** Shared remote PostgreSQL on [Neon](https://neon.tech).
+> **Backend deploy:** Render at [`https://fapp-api.onrender.com`](https://fapp-api.onrender.com/docs). Auto-redeploys on every push to `main`.
 
 ### 1. Clone the repository
 
@@ -126,139 +100,112 @@ git clone https://github.com/jaime-oriol/financial_app.git
 cd financial_app
 ```
 
-### 2. Frontend (Web in Chrome)
+### 2. Frontend (recommended)
 
-**Recommended for team testing — no mobile device needed.**
-
-First, install Flutter if not already installed:
-```bash
-git clone https://github.com/flutter/flutter.git -b stable ~/flutter
-export PATH="$PATH:$HOME/flutter/bin"
-flutter --version
-```
-
-Then run the app:
 ```bash
 cd frontend
-flutter pub get
-flutter run -d chrome
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python app.py
 ```
 
-This opens the app in Google Chrome at `http://localhost:9099`.
+Opens at `http://localhost:8080`. Connects to the deployed backend by default.
 
-**Press `r` to hot-reload after code changes, `q` to quit.**
+To point at a local backend: `API_URL=http://localhost:8000/api .venv/bin/python app.py`
 
-### 3. Frontend (Android APK)
-
-**Easiest option:** Download the pre-built APK from [GitHub Releases](https://github.com/jaime-oriol/financial_app/releases):
-
-1. Go to [Releases](https://github.com/jaime-oriol/financial_app/releases)
-2. Download the latest `app-release.apk`
-3. Transfer to your Android phone and install
-
-> **📱 The APK connects directly to the deployed backend** — no local setup needed.
-> **🔄 Auto-builds:** Every push to `main` automatically compiles a new APK to Releases.
-
-### 4. Backend (local development, optional)
-
-Only needed if you want to run the backend locally. The production backend is already deployed at [fapp-api.onrender.com](https://fapp-api.onrender.com/docs).
+### 3. Backend (only if running locally)
 
 ```bash
+cd backend
 conda create -n fapp python=3.11 -y
 conda activate fapp
-cd backend
 pip install -r requirements.txt
-cp .env.example .env
-```
-
-Edit `backend/.env` with shared database credentials (ask a team member):
-
-```env
-DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-xxx.region.neon.tech/neondb?sslmode=require
-JWT_SECRET=fapp-dev-secret-2026-change-in-prod
-```
-
-```bash
+cp .env.example .env  # edit with shared Neon credentials
 uvicorn app.main:app --reload
 ```
 
-API at `http://localhost:8000` | Docs at `http://localhost:8000/docs`
+API at `http://localhost:8000` · Docs at `http://localhost:8000/docs`
 
-### 5. Run backend tests
+### 4. Run backend tests
 
 ```bash
 cd backend
-conda activate fapp
 python -m pytest tests/ -v
 ```
 
-All 23 tests run against SQLite in-memory — no database connection needed for testing.
+23 tests against SQLite in-memory — no database connection required.
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| `POST` | `/api/auth/register` | Create new account | ❌ |
-| `POST` | `/api/auth/login` | Login & get JWT token | ❌ |
-| `GET` | `/api/categories` | List all categories | ❌ |
+| `POST` | `/api/auth/register` | Create account | ❌ |
+| `POST` | `/api/auth/login` | Login → JWT | ❌ |
+| `GET`  | `/api/auth/me` | Current user info | ✅ |
+| `GET`  | `/api/categories` | List categories | ❌ |
 | `POST` | `/api/expenses` | Create expense | ✅ |
-| `GET` | `/api/expenses` | List expenses (filters: `start_date`, `end_date`, `category_id`) | ✅ |
+| `GET`  | `/api/expenses` | List (filters: `start_date`, `end_date`, `category_id`) | ✅ |
+| `DELETE` | `/api/expenses/{id}` | Delete expense | ✅ |
 | `POST` | `/api/budgets` | Create monthly budget | ✅ |
-| `GET` | `/api/budgets` | List budgets (filters: `month`, `year`) | ✅ |
-| `GET` | `/api/dashboard` | Dashboard summary (spending, budgets, transactions) | ✅ |
-| `GET` | `/health` | Health check | ❌ |
+| `GET`  | `/api/budgets` | List (filters: `month`, `year`) | ✅ |
+| `DELETE` | `/api/budgets/{id}` | Delete budget | ✅ |
+| `GET`  | `/api/dashboard` | Spending, streak, trend, budgets, recent | ✅ |
+| `GET`  | `/api/goals` | List user goals | ✅ |
+| `POST` | `/api/goals` | Create goal | ✅ |
+| `POST` | `/api/goals/{id}/contribute` | Add or withdraw amount | ✅ |
+| `DELETE` | `/api/goals/{id}` | Delete goal | ✅ |
+| `GET`  | `/health` | Health check | ❌ |
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
-- **FastAPI** — Async Python web framework
-- **SQLAlchemy 2.0** — ORM with mapped columns
-- **Alembic** — Database migrations
-- **Neon (PostgreSQL)** — Serverless cloud database
-- **JWT (python-jose)** — Token-based authentication
-- **Pydantic v2** — Request/response validation
-- **pytest** — Testing framework (23 tests)
+
+- **FastAPI** — async Python web framework
+- **SQLAlchemy 2.0** — ORM with `Mapped` columns
+- **Alembic** — migrations
+- **Neon (PostgreSQL)** — serverless cloud database
+- **JWT (python-jose)** — auth
+- **Pydantic v2** — request/response validation
+- **pytest** — 23 tests (SQLite in-memory)
 
 ### Frontend
-- **Flutter 3.29** — Cross-platform UI framework (web, Android, iOS)
-- **Riverpod** — State management
-- **fl_chart** — Donut/pie charts for spending visualization
-- **http** — REST API client
-- **shared_preferences** — Local JWT token storage
+
+- **NiceGUI 2.13** — Python web UI (Quasar/Vue under the hood)
+- **httpx** — async HTTP client
+- **echart** — donut + area charts (via NiceGUI's `ui.echart`)
+- Single-process Python — deploys anywhere FastAPI deploys
 
 ---
 
-## 📊 Database Schema
+## Database Schema
 
-Four main tables hosted on Neon, aligned with the Entity Relationship Diagram (see `docs/Solution_design.pdf`, p.11):
+Five tables on Neon (see `docs/Solution_design.pdf`, p.11 for ERD):
 
 | Table | Primary Key | Key Columns |
 |-------|-------------|-------------|
-| **users** | user_id (INT) | name, surname, birthdate, email (UNIQUE), password_hash |
-| **categories** | category_id (INT) | name, icon, description |
+| **users** | user_id (INT) | name, surname, birthdate, email (UNIQUE), password (bcrypt) |
+| **categories** | category_id (INT) | name, icon, description (6 seed rows) |
 | **expenses** | expense_id (INT) | user_id FK, category_id FK, amount, description, expense_date |
 | **budgets** | budget_id (INT) | user_id FK, category_id FK, month, year, limit_amount |
+| **goals** | goal_id (INT) | user_id FK, name, target_amount, saved_amount, deadline |
 
 ---
 
-## 📄 Documentation
+## Documentation
 
-Full project documentation is available in the `docs/` folder:
-- **OPPR.pdf** — Objectives, requirements, milestones, use case diagrams, Gantt chart
-- **Solution_design.pdf** — Use cases, activity/sequence/class diagrams, ERD, DB schema, wireframes
+- **OPPR.pdf** — Objectives, requirements, milestones, use case diagrams
+- **Solution_design.pdf** — Use cases, sequence/class diagrams, ERD, wireframes
 
 ---
 
-## 👥 Team
+## Team
 
 **3:2 Analytics** — Academic project, 2026
 
----
+## License
 
-## 📝 License
-
-This project is licensed under the MIT License.
+MIT
