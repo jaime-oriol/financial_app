@@ -39,16 +39,28 @@ def page_setup(title: str = "FAPP") -> None:
             background-color: {theme.BG};
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: {theme.PRIMARY};
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
         }}
         .nicegui-content {{
             padding: 0;
+        }}
+        /* Fade-in suave al cargar (sensacion premium) */
+        @keyframes fapp-fade-in {{
+            from {{ opacity: 0; transform: translateY(4px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+        .nicegui-content > * {{
+            animation: fapp-fade-in 0.28s ease-out;
         }}
         .fapp-card {{
             background: {theme.WHITE};
             border-radius: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             padding: 18px;
-            transition: box-shadow 0.18s ease;
+            transition: box-shadow 0.18s ease, transform 0.18s ease;
         }}
         .fapp-card:hover {{
             box-shadow: 0 4px 16px rgba(0,0,0,0.07);
@@ -70,6 +82,21 @@ def page_setup(title: str = "FAPP") -> None:
             text-transform: uppercase;
         }}
         html {{ scroll-behavior: smooth; }}
+        /* Tap feedback en botones */
+        .q-btn:active:not(.disabled) {{
+            transform: scale(0.97);
+        }}
+        /* Notifications mas pulidas */
+        .q-notification {{
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+        }}
+        /* Scrollbar fino y discreto */
+        ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
+        ::-webkit-scrollbar-thumb {{
+            background: {theme.GREY_SOFT}aa; border-radius: 3px;
+        }}
+        ::-webkit-scrollbar-track {{ background: transparent; }}
         """
     )
 
