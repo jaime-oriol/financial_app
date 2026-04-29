@@ -21,7 +21,7 @@
 
 | Service | URL |
 |---------|-----|
-| **Frontend** | https://fapp-web.onrender.com |
+| **Frontend** | https://financial-app-xai5.onrender.com |
 | **Backend API** | https://fapp-api.onrender.com |
 | **API Docs** | https://fapp-api.onrender.com/docs |
 
@@ -102,7 +102,7 @@ financial_app/
 
 > **Database:** Shared PostgreSQL on [Neon](https://neon.tech).  
 > **Backend:** Deployed on Render at [`https://fapp-api.onrender.com`](https://fapp-api.onrender.com/docs). Auto-redeploys on every push to `main`.  
-> **Frontend:** Deployed on Render at [`https://fapp-web.onrender.com`](https://fapp-web.onrender.com). Auto-redeploys on every push to `main`.
+> **Frontend:** Deployed on Render at [`https://financial-app-xai5.onrender.com`](https://financial-app-xai5.onrender.com). Auto-redeploys on every push to `main`.
 
 ### 1. Clone the repository
 
