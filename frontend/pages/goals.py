@@ -85,8 +85,8 @@ def _goal_card(goal: dict, reload) -> None:
         await reload()
 
     with ui.column().classes("w-full gap-3").style(
-        f"background: {theme.WHITE}; border-radius: 16px; padding: 18px; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.04);"
+        f"background: {theme.WHITE}; border-radius: 20px; padding: 20px; "
+        "box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);"
     ):
         # Header: nombre + status + delete
         with ui.row().classes("w-full items-center no-wrap gap-2"):

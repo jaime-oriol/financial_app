@@ -12,25 +12,34 @@ from layout import page_setup, primary_button
 
 def _branded_header(title: str, subtitle: str) -> None:
     page_setup()
-    with ui.column().classes("w-full max-w-[480px] mx-auto gap-0").style(
-        f"background-color: {theme.WHITE}; padding: 32px 24px 0 24px;"
+    with ui.element("div").classes("w-full").style(
+        "background: linear-gradient(150deg, #0D1B3E 0%, #16213E 52%, #1e3574 100%); "
+        "padding: 56px 28px 44px 28px;"
     ):
-        with ui.column().classes("w-full items-center gap-2").style("margin-top: 24px;"):
-            ui.icon("savings").style(f"color: {theme.SECONDARY}; font-size: 56px;")
+        with ui.column().classes("w-full max-w-[480px] mx-auto gap-0 items-start"):
+            with ui.element("div").style(
+                "width: 58px; height: 58px; border-radius: 16px; margin-bottom: 20px; "
+                "background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); "
+                "display: flex; align-items: center; justify-content: center;"
+            ):
+                ui.icon("savings").style("color: white; font-size: 30px;")
             ui.label("FAPP").style(
-                f"color: {theme.PRIMARY}; font-size: 28px; font-weight: 800; "
-                "letter-spacing: -0.5px;"
+                "color: rgba(255,255,255,0.4); font-size: 10px; font-weight: 700; "
+                "letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 10px;"
             )
-        with ui.column().classes("w-full items-center gap-1").style("margin-top: 24px;"):
             ui.label(title).style(
-                f"color: {theme.PRIMARY}; font-size: 24px; font-weight: 700;"
+                "color: white; font-size: 28px; font-weight: 800; "
+                "letter-spacing: -0.5px; line-height: 1.2;"
             )
-            ui.label(subtitle).style(f"color: {theme.GREY_TEXT}; font-size: 14px;")
+            ui.label(subtitle).style(
+                "color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 6px;"
+            )
 
 
 def _form_container():
-    return ui.column().classes("w-full max-w-[480px] mx-auto gap-3").style(
-        f"background-color: {theme.WHITE}; padding: 24px; min-height: calc(100vh - 220px);"
+    return ui.column().classes("w-full max-w-[480px] mx-auto gap-4").style(
+        f"background: {theme.WHITE}; padding: 28px 24px; "
+        "min-height: calc(100vh - 270px);"
     )
 
 

@@ -73,9 +73,9 @@ async def home_page():
     with app_shell(active="/"):
         # Header con saludo + total del mes (gradiente sutil)
         with ui.column().classes("w-full gap-1").style(
-            "background: linear-gradient(135deg, #16213E 0%, #1F3260 100%); "
-            "padding: 36px 22px 24px 22px; "
-            "border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;"
+            "background: linear-gradient(145deg, #0D1B3E 0%, #16213E 50%, #1e3574 100%); "
+            "padding: 48px 22px 28px 22px; "
+            "border-bottom-left-radius: 32px; border-bottom-right-radius: 32px;"
         ):
             with ui.row().classes("w-full items-center gap-3 no-wrap"):
                 refs["avatar"] = ui.element("div").style(
@@ -105,16 +105,30 @@ async def home_page():
             )
 
         # Stats: streak | budget %
-        with ui.row().classes("w-full gap-2 no-wrap").style("padding: 16px;"):
-            with ui.column().classes("flex-1 fapp-card gap-1"):
-                ui.label("Streak").classes("fapp-section-label")
-                with ui.row().classes("items-center gap-1"):
-                    refs["streak"] = ui.label("0 days").classes("fapp-stat-num")
-                    ui.icon("local_fire_department").style(
-                        f"color: {theme.WARNING}; font-size: 24px;"
-                    )
-            with ui.column().classes("flex-1 fapp-card gap-1"):
-                ui.label("Budget used").classes("fapp-section-label")
+        with ui.row().classes("w-full gap-3 no-wrap").style("padding: 16px;"):
+            with ui.column().classes("flex-1 fapp-card gap-2").style("padding: 16px;"):
+                with ui.row().classes("w-full justify-between items-center no-wrap"):
+                    ui.label("Streak").classes("fapp-section-label")
+                    with ui.element("div").style(
+                        f"background: {theme.WARNING}1a; width: 30px; height: 30px; "
+                        "border-radius: 9px; display: flex; align-items: center; "
+                        "justify-content: center; flex-shrink: 0;"
+                    ):
+                        ui.icon("local_fire_department").style(
+                            f"color: {theme.WARNING}; font-size: 16px;"
+                        )
+                refs["streak"] = ui.label("0 days").classes("fapp-stat-num")
+            with ui.column().classes("flex-1 fapp-card gap-2").style("padding: 16px;"):
+                with ui.row().classes("w-full justify-between items-center no-wrap"):
+                    ui.label("Budget").classes("fapp-section-label")
+                    with ui.element("div").style(
+                        f"background: {theme.SECONDARY}1a; width: 30px; height: 30px; "
+                        "border-radius: 9px; display: flex; align-items: center; "
+                        "justify-content: center; flex-shrink: 0;"
+                    ):
+                        ui.icon("account_balance_wallet").style(
+                            f"color: {theme.SECONDARY}; font-size: 16px;"
+                        )
                 refs["budget_pct"] = ui.label("0%").classes("fapp-stat-num").style(
                     f"color: {theme.SECONDARY};"
                 )

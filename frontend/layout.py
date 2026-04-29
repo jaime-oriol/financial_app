@@ -30,8 +30,8 @@ def page_setup(title: str = "FAPP") -> None:
         'maximum-scale=1.0, user-scalable=no">'
     )
     ui.add_head_html(
-        '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;'
-        '600;700;800&display=swap" rel="stylesheet">'
+        '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;'
+        '600;700;800;900&display=swap" rel="stylesheet">'
     )
     ui.add_css(
         f"""
@@ -44,26 +44,22 @@ def page_setup(title: str = "FAPP") -> None:
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: contain;
         }}
-        .nicegui-content {{
-            padding: 0;
-        }}
-        /* Fade-in suave al cargar (sensacion premium) */
+        .nicegui-content {{ padding: 0; }}
         @keyframes fapp-fade-in {{
-            from {{ opacity: 0; transform: translateY(4px); }}
+            from {{ opacity: 0; transform: translateY(6px); }}
             to {{ opacity: 1; transform: translateY(0); }}
         }}
-        .nicegui-content > * {{
-            animation: fapp-fade-in 0.28s ease-out;
-        }}
+        .nicegui-content > * {{ animation: fapp-fade-in 0.28s ease-out; }}
         .fapp-card {{
             background: {theme.WHITE};
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);
             padding: 18px;
-            transition: box-shadow 0.18s ease, transform 0.18s ease;
+            transition: box-shadow 0.2s ease, transform 0.2s ease;
         }}
         .fapp-card:hover {{
-            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+            transform: translateY(-1px);
         }}
         .fapp-stat-num {{
             font-size: 28px;
@@ -71,32 +67,41 @@ def page_setup(title: str = "FAPP") -> None:
             line-height: 1;
             font-variant-numeric: tabular-nums;
         }}
-        .fapp-money {{
-            font-variant-numeric: tabular-nums;
-        }}
+        .fapp-money {{ font-variant-numeric: tabular-nums; }}
         .fapp-section-label {{
             font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
             color: {theme.GREY_TEXT};
             text-transform: uppercase;
         }}
         html {{ scroll-behavior: smooth; }}
-        /* Tap feedback en botones */
-        .q-btn:active:not(.disabled) {{
-            transform: scale(0.97);
-        }}
-        /* Notifications mas pulidas */
+        .q-btn:active:not(.disabled) {{ transform: scale(0.97); transition: transform 0.1s; }}
         .q-notification {{
-            border-radius: 12px !important;
-            font-weight: 500 !important;
+            border-radius: 14px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.14) !important;
         }}
-        /* Scrollbar fino y discreto */
-        ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
-        ::-webkit-scrollbar-thumb {{
-            background: {theme.GREY_SOFT}aa; border-radius: 3px;
+        .q-field--outlined .q-field__control {{ border-radius: 14px !important; }}
+        .q-field--outlined .q-field__control:before {{
+            border-color: #E4E8EE !important;
+            border-width: 1.5px !important;
         }}
+        .q-field--outlined.q-field--focused .q-field__control:before {{
+            border-color: {theme.SECONDARY} !important;
+            border-width: 2px !important;
+        }}
+        .q-field__label {{ font-weight: 500 !important; }}
+        .q-dialog__backdrop {{
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            background: rgba(10,18,40,0.5) !important;
+        }}
+        .q-card {{ border-radius: 22px !important; }}
+        ::-webkit-scrollbar {{ width: 4px; height: 4px; }}
+        ::-webkit-scrollbar-thumb {{ background: {theme.GREY_SOFT}66; border-radius: 2px; }}
         ::-webkit-scrollbar-track {{ background: transparent; }}
+        .q-linear-progress, .q-linear-progress__track {{ border-radius: 99px !important; }}
         """
     )
 
@@ -124,25 +129,30 @@ def app_shell(active: str | None = None) -> Iterator[None]:
 
     # Bottom navigation (q-footer = fijo)
     with ui.footer().classes("q-py-none").style(
-        f"background-color: {theme.WHITE}; border-top: 1px solid {theme.GREY_BG}; "
-        "box-shadow: 0 -2px 10px rgba(0,0,0,0.04);"
+        f"background-color: {theme.WHITE}; "
+        "box-shadow: 0 -1px 0 rgba(0,0,0,0.06), 0 -8px 24px rgba(0,0,0,0.05);"
     ):
         with ui.row().classes(
             "w-full max-w-[480px] mx-auto justify-around items-center"
-        ).style("padding: 6px 4px;"):
+        ).style("padding: 4px 4px 8px 4px;"):
             for icon, label, path in NAV_ITEMS:
                 _nav_item(icon, label, path, is_active=(active == path))
 
 
 def _nav_item(icon: str, label: str, path: str, is_active: bool) -> None:
-    color = theme.SECONDARY if is_active else theme.GREY_SOFT
+    color = theme.SECONDARY if is_active else "#8E9BAA"
     weight = "700" if is_active else "500"
+    icon_bg = f"{theme.SECONDARY}18" if is_active else "transparent"
     with ui.column().classes("items-center cursor-pointer gap-0").style(
-        "padding: 6px 8px; min-width: 56px; transition: transform 0.15s ease;"
+        "padding: 4px 6px 4px 6px; min-width: 60px;"
     ).on("click", lambda: ui.navigate.to(path)):
-        ui.icon(icon).style(f"color: {color}; font-size: 24px;")
+        with ui.element("div").style(
+            f"background: {icon_bg}; border-radius: 14px; padding: 4px 16px; "
+            "transition: background 0.2s ease; margin-bottom: 2px;"
+        ):
+            ui.icon(icon).style(f"color: {color}; font-size: 22px;")
         ui.label(label).style(
-            f"color: {color}; font-size: 10.5px; font-weight: {weight};"
+            f"color: {color}; font-size: 10px; font-weight: {weight};"
         )
 
 
@@ -162,8 +172,9 @@ def section(title: str | None = None, padding_x: int = 16, top: int = 18) -> Ite
 @contextmanager
 def card(padding: int = 18) -> Iterator[None]:
     with ui.column().classes("w-full gap-2").style(
-        f"background: {theme.WHITE}; border-radius: 16px; "
-        f"box-shadow: 0 2px 8px rgba(0,0,0,0.04); padding: {padding}px;"
+        f"background: {theme.WHITE}; border-radius: 20px; "
+        "box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05); "
+        f"padding: {padding}px;"
     ):
         yield
 

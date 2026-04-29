@@ -137,14 +137,18 @@ async def profile_page():
 
 def _stat_card(label: str, value: str, icon: str, color: str) -> ui.label:
     """Crea un card de stat y devuelve la label del numero (mutable)."""
-    with ui.column().classes("flex-1 gap-0").style(
-        f"background: {theme.WHITE}; border-radius: 14px; padding: 12px 8px; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.04); align-items: center; min-width: 0; "
-        "transition: box-shadow 0.18s ease;"
+    with ui.column().classes("flex-1 gap-1").style(
+        f"background: {theme.WHITE}; border-radius: 18px; padding: 14px 8px; "
+        "box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05); "
+        "align-items: center; min-width: 0;"
     ):
-        ui.icon(icon).style(f"color: {color}; font-size: 20px;")
+        with ui.element("div").style(
+            f"background: {color}18; width: 34px; height: 34px; border-radius: 10px; "
+            "display: flex; align-items: center; justify-content: center;"
+        ):
+            ui.icon(icon).style(f"color: {color}; font-size: 18px;")
         value_label = ui.label(value).classes("fapp-money").style(
-            f"color: {theme.PRIMARY}; font-size: 19px; font-weight: 800; margin-top: 4px;"
+            f"color: {theme.PRIMARY}; font-size: 20px; font-weight: 800; line-height: 1;"
         )
         ui.label(label).style(
             f"color: {theme.GREY_TEXT}; font-size: 10px; font-weight: 600; "

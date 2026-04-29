@@ -31,14 +31,15 @@ async def get_categories() -> list[dict]:
 
 def _dialog_card():
     return ui.card().style(
-        f"width: 360px; max-width: 92vw; border-radius: 18px; padding: 22px; "
-        f"background: {theme.WHITE};"
+        f"width: 380px; max-width: 94vw; border-radius: 24px; padding: 24px; "
+        f"background: {theme.WHITE}; box-shadow: 0 24px 64px rgba(0,0,0,0.18);"
     )
 
 
 def _dialog_title(text: str) -> None:
     ui.label(text).style(
-        f"color: {theme.PRIMARY}; font-size: 18px; font-weight: 700; margin-bottom: 6px;"
+        f"color: {theme.PRIMARY}; font-size: 19px; font-weight: 800; "
+        "letter-spacing: -0.3px; margin-bottom: 6px;"
     )
 
 
