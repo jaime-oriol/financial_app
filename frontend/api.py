@@ -3,6 +3,7 @@ Inyecta el JWT automaticamente, lanza ApiException con codigo + mensaje.
 Todas las pages usan esta capa, no httpx directamente.
 """
 
+import asyncio
 import os
 from typing import Any
 
@@ -27,17 +28,23 @@ async def _request(method: str, path: str, **kwargs: Any) -> Any:
         headers["Authorization"] = f"Bearer {token}"
     headers["Content-Type"] = "application/json"
 
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.request(method, f"{BASE_URL}{path}", headers=headers, **kwargs)
+    # Render free tier duerme y devuelve 429 al despertar (~30s). Reintento silencioso.
+    for attempt in range(10):
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.request(method, f"{BASE_URL}{path}", headers=headers, **kwargs)
 
-    if 200 <= response.status_code < 300:
-        return response.json() if response.content else None
+        if response.status_code == 429 and attempt < 9:
+            await asyncio.sleep(4)
+            continue
 
-    try:
-        detail = response.json().get("detail", response.text)
-    except Exception:
-        detail = response.text or "Unknown error"
-    raise ApiException(response.status_code, str(detail))
+        if 200 <= response.status_code < 300:
+            return response.json() if response.content else None
+
+        try:
+            detail = response.json().get("detail", response.text)
+        except Exception:
+            detail = response.text or "Unknown error"
+        raise ApiException(response.status_code, str(detail))
 
 
 async def get(path: str, params: dict | None = None) -> Any:
