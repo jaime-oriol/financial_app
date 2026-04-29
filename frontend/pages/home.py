@@ -90,8 +90,8 @@ async def home_page():
                     f"color: {theme.WHITE}; font-size: 14px; font-weight: 500;"
                 )
             ui.label("Total spending this month").style(
-                "color: rgba(255,255,255,0.7); font-size: 11px; "
-                "font-weight: 600; letter-spacing: 1px; text-transform: uppercase;"
+                "color: rgba(255,255,255,0.6); font-size: 10.5px; "
+                "font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;"
             )
             refs["total"] = ui.label("$0.00").classes("fapp-money").style(
                 f"color: {theme.WHITE}; font-size: 36px; font-weight: 800;"
@@ -133,13 +133,11 @@ async def home_page():
                     f"color: {theme.SECONDARY};"
                 )
 
-        # 7-day spending trend (chart de area, datos reales del backend)
-        with section("Last 7 days"):
+        with section("7-Day Trend"):
             with card():
                 refs["trend"] = ui.column().classes("w-full gap-1")
 
-        # Recent transactions
-        with section("Recent transactions"):
+        with section("Recent Transactions"):
             refs["recent"] = ui.column().classes("w-full gap-2")
 
         # FAB: abre el dialog directamente (no navega)
@@ -284,18 +282,18 @@ def _render_recent(container: ui.column, expenses: list[dict], reload) -> None:
                     ui.icon("receipt_long").style(
                         f"color: {theme.GREY_SOFT}; font-size: 48px;"
                     )
-                    ui.label("No expenses yet").style(
+                    ui.label("No transactions yet").style(
                         f"color: {theme.PRIMARY}; font-size: 14px; font-weight: 600;"
                     )
-                    ui.label("Tap below to add your first one").style(
-                        f"color: {theme.GREY_TEXT}; font-size: 12px; text-align: center;"
+                    ui.label("Record your first expense to start tracking your spending.").style(
+                        f"color: {theme.GREY_TEXT}; font-size: 12px; text-align: center; max-width: 260px;"
                     )
                     ui.button(
-                        "Add expense", icon="add",
+                        "Add Expense", icon="add",
                         on_click=lambda: dialogs.show_add_expense(on_success=reload),
                     ).props("unelevated no-caps rounded").style(
                         f"background-color: {theme.SECONDARY}; color: white; "
-                        "margin-top: 8px;"
+                        "margin-top: 8px; font-weight: 600;"
                     )
             return
         with card(padding=8):

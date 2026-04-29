@@ -23,9 +23,7 @@ async def profile_page():
 
     with app_shell(active="/profile"):
         with section(top=22):
-            ui.label("Profile").style(
-                f"color: {theme.PRIMARY}; font-size: 24px; font-weight: 800;"
-            )
+            ui.label("Profile").classes("fapp-page-title")
 
         async def reload_profile() -> None:
             try:
@@ -82,7 +80,7 @@ async def profile_page():
                             f"color: {theme.GREY_SOFT}; font-size: 11px;"
                         )
 
-        with section("Your activity"):
+        with section("Activity"):
             with ui.row().classes("w-full gap-2 no-wrap"):
                 refs["streak"] = _stat_card(
                     "Streak", "0", "local_fire_department", theme.WARNING
@@ -98,10 +96,10 @@ async def profile_page():
 
         with section(top=18):
             ui.button(
-                "Log out", icon="logout", on_click=_logout
+                "Sign Out", icon="logout", on_click=_logout
             ).props("unelevated no-caps rounded").classes("w-full").style(
                 f"background-color: {theme.ERROR}; color: white; "
-                "height: 48px; font-weight: 600;"
+                "height: 48px; font-weight: 600; font-size: 14px;"
             )
             ui.element("div").style("height: 16px;")
 
@@ -162,8 +160,11 @@ def _render_achievements(container: ui.row, achievements: list[dict]) -> None:
     container.clear()
     with container:
         if not achievements:
-            ui.label("No achievements yet").style(
-                f"color: {theme.GREY_TEXT}; font-size: 12px; padding: 8px 4px;"
+            ui.label("No achievements earned yet").style(
+                f"color: {theme.GREY_TEXT}; font-size: 12px; font-weight: 500; padding: 8px 4px;"
+            )
+            ui.label("Keep using FAPP to unlock badges.").style(
+                f"color: {theme.GREY_SOFT}; font-size: 11px; padding: 0 4px 8px 4px;"
             )
             return
         for a in achievements:

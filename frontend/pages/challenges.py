@@ -16,8 +16,8 @@ from layout import app_shell, card, empty_state, require_auth, section
 
 
 KIND_META = {
-    "quiz": {"icon": "quiz", "subtitle": "Multiple-choice"},
-    "simulation": {"icon": "psychology", "subtitle": "Decision scenario"},
+    "quiz": {"icon": "quiz", "subtitle": "Multiple choice"},
+    "simulation": {"icon": "psychology", "subtitle": "Decision simulation"},
 }
 
 LEVEL_META = {
@@ -49,20 +49,14 @@ async def challenges_page():
             return
 
         refs["xp_label"].text = f"{dashboard.get('total_xp', 0)} XP"
-        refs["done_label"].text = (
-            f"{dashboard.get('challenges_done', 0)} attempt"
-            f"{'s' if dashboard.get('challenges_done', 0) != 1 else ''}"
-        )
+        done = dashboard.get('challenges_done', 0)
+        refs["done_label"].text = f"{done} challenge{'s' if done != 1 else ''} completed"
         _render_levels(refs["list"], challenges)
 
     with app_shell(active="/challenges"):
         with section(top=22):
-            ui.label("Challenges").style(
-                f"color: {theme.PRIMARY}; font-size: 24px; font-weight: 800;"
-            )
-            ui.label("Earn XP by playing real-world money scenarios").style(
-                f"color: {theme.GREY_TEXT}; font-size: 13px;"
-            )
+            ui.label("Challenges").classes("fapp-page-title")
+            ui.label("Build financial knowledge through real-world scenarios").classes("fapp-page-subtitle")
 
         # XP banner
         with section(top=14):
@@ -96,7 +90,7 @@ def _render_levels(container: ui.column, challenges: list[dict]) -> None:
     if not challenges:
         with container:
             with card():
-                empty_state("emoji_events", "No challenges available yet")
+                empty_state("emoji_events", "No challenges available", "Check back soon for new content.")
         return
 
     by_level: dict[int, list[dict]] = {}
@@ -135,11 +129,11 @@ def _render_levels(container: ui.column, challenges: list[dict]) -> None:
                     with ui.row().classes("items-center gap-1").style(
                         f"background: {theme.GREY_BG}; padding: 4px 10px; border-radius: 8px;"
                     ):
-                        ui.icon("lock").style(
+                        ui.icon("lock_outline").style(
                             f"color: {theme.GREY_SOFT}; font-size: 14px;"
                         )
                         ui.label(
-                            f"Finish {UNLOCK_THRESHOLD} of {prev_name}"
+                            f"Complete {UNLOCK_THRESHOLD} {prev_name} to unlock"
                         ).style(
                             f"color: {theme.GREY_SOFT}; font-size: 11px; font-weight: 600;"
                         )
@@ -194,8 +188,8 @@ def _challenge_card(challenge: dict) -> None:
                     f"color: {theme.GREY_TEXT}; font-size: 12px;"
                 )
                 if locked:
-                    ui.label("Locked").style(
-                        f"color: {theme.GREY_SOFT}; font-size: 11px; font-weight: 600; "
+                    ui.label("Locked — complete the previous level to unlock").style(
+                        f"color: {theme.GREY_SOFT}; font-size: 11px; font-weight: 500; "
                         "margin-top: 2px;"
                     )
                 else:

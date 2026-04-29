@@ -42,35 +42,31 @@ async def budget_page():
 
     with app_shell(active="/budget"):
         with section(top=22):
-            ui.label("Budget").style(
-                f"color: {theme.PRIMARY}; font-size: 24px; font-weight: 800;"
-            )
-            ui.label("Track spending and set monthly limits").style(
-                f"color: {theme.GREY_TEXT}; font-size: 13px;"
-            )
+            ui.label("Budget").classes("fapp-page-title")
+            ui.label("Monitor spending and manage monthly limits").classes("fapp-page-subtitle")
 
         with section():
             with card():
-                ui.label("Spending this month").style(
-                    f"color: {theme.PRIMARY}; font-size: 15px; font-weight: 700;"
+                ui.label("Monthly Overview").style(
+                    f"color: {theme.PRIMARY}; font-size: 15px; font-weight: 700; letter-spacing: -0.2px;"
                 )
                 refs["chart"] = ui.column().classes("w-full items-center gap-2")
 
-        with section("Category budgets"):
+        with section("Budgets"):
             refs["budgets"] = ui.column().classes("w-full gap-2")
 
-        with section("Recent expenses"):
+        with section("Transactions"):
             refs["expenses"] = ui.column().classes("w-full gap-2")
 
         with section():
             primary_button(
-                "Add expense",
+                "Add Expense",
                 lambda: dialogs.show_add_expense(on_success=reload),
                 icon="add",
             )
         with section(top=8):
             outlined_button(
-                "New budget",
+                "Set Budget",
                 lambda: dialogs.show_create_budget(on_success=reload),
                 icon="pie_chart_outline",
             )
@@ -83,7 +79,7 @@ def _render_chart(container: ui.column, spending: list[dict]) -> None:
     container.clear()
     with container:
         if not spending:
-            empty_state("donut_large", "No spending yet this month")
+            empty_state("donut_large", "No spending recorded", "Add an expense to see your breakdown.")
             return
         total = sum(float(s["total"]) for s in spending)
         ui.echart(
@@ -164,7 +160,7 @@ def _render_budgets(container: ui.column, budgets: list[dict], reload) -> None:
     with container:
         if not budgets:
             with card():
-                empty_state("savings", "No budgets yet. Create one to start tracking!")
+                empty_state("account_balance_wallet", "No budgets set", "Define a monthly limit per category to monitor your spending.")
             return
         for b in budgets:
             _budget_row(b, reload)
@@ -215,7 +211,7 @@ def _render_expenses(container: ui.column, expenses: list[dict], reload) -> None
     with container:
         if not expenses:
             with card():
-                empty_state("receipt_long", "No expenses yet")
+                empty_state("receipt_long", "No transactions recorded", "Your expenses will appear here.")
             return
         with card(padding=4):
             for i, e in enumerate(expenses[:20]):

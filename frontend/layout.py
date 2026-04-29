@@ -53,27 +53,42 @@ def page_setup(title: str = "FAPP") -> None:
         .fapp-card {{
             background: {theme.WHITE};
             border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.055);
             box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);
             padding: 18px;
             transition: box-shadow 0.2s ease, transform 0.2s ease;
         }}
         .fapp-card:hover {{
-            box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+            box-shadow: 0 4px 28px rgba(0,0,0,0.10);
             transform: translateY(-1px);
         }}
         .fapp-stat-num {{
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
             line-height: 1;
+            letter-spacing: -0.5px;
             font-variant-numeric: tabular-nums;
         }}
-        .fapp-money {{ font-variant-numeric: tabular-nums; }}
+        .fapp-money {{ font-variant-numeric: tabular-nums; letter-spacing: -0.2px; }}
         .fapp-section-label {{
             font-size: 11px;
             font-weight: 700;
-            letter-spacing: 1.2px;
+            letter-spacing: 1.4px;
             color: {theme.GREY_TEXT};
             text-transform: uppercase;
+        }}
+        .fapp-page-title {{
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+            color: {theme.PRIMARY};
+            line-height: 1.1;
+        }}
+        .fapp-page-subtitle {{
+            font-size: 13px;
+            color: {theme.GREY_TEXT};
+            font-weight: 400;
+            margin-top: 2px;
         }}
         html {{ scroll-behavior: smooth; }}
         .q-btn:active:not(.disabled) {{ transform: scale(0.97); transition: transform 0.1s; }}
@@ -206,13 +221,21 @@ def render_avatar(container, user: dict, size: int = 64, font_size: int = 28) ->
                 )
 
 
-def empty_state(icon: str, message: str) -> None:
-    """Estado vacio bonito para reemplazar listas sin datos."""
+def empty_state(icon: str, message: str, subtitle: str | None = None) -> None:
+    """Estado vacio para listas sin datos."""
     with ui.column().classes("w-full items-center gap-2").style("padding: 32px 16px;"):
-        ui.icon(icon).style(f"color: {theme.GREY_SOFT}; font-size: 48px;")
+        with ui.element("div").style(
+            f"background: {theme.GREY_BG}; width: 56px; height: 56px; border-radius: 16px; "
+            "display: flex; align-items: center; justify-content: center;"
+        ):
+            ui.icon(icon).style(f"color: {theme.GREY_SOFT}; font-size: 26px;")
         ui.label(message).style(
-            f"color: {theme.GREY_TEXT}; font-size: 13px; text-align: center;"
+            f"color: {theme.PRIMARY}; font-size: 14px; font-weight: 600; text-align: center;"
         )
+        if subtitle:
+            ui.label(subtitle).style(
+                f"color: {theme.GREY_TEXT}; font-size: 12px; text-align: center; max-width: 260px;"
+            )
 
 
 def primary_button(text: str, on_click, icon: str | None = None) -> ui.button:
@@ -220,7 +243,7 @@ def primary_button(text: str, on_click, icon: str | None = None) -> ui.button:
         "unelevated rounded no-caps"
     ).classes("w-full").style(
         f"background-color: {theme.SECONDARY}; color: {theme.WHITE}; "
-        "height: 48px; font-weight: 600;"
+        "height: 48px; font-weight: 600; font-size: 14px; letter-spacing: 0.2px;"
     )
     return btn
 
@@ -230,6 +253,6 @@ def outlined_button(text: str, on_click, icon: str | None = None) -> ui.button:
         "outline rounded no-caps"
     ).classes("w-full").style(
         f"color: {theme.SECONDARY}; height: 48px; font-weight: 600; "
-        f"border-color: {theme.SECONDARY};"
+        f"border-color: {theme.SECONDARY}; font-size: 14px; letter-spacing: 0.2px;"
     )
     return btn

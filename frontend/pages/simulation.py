@@ -92,8 +92,9 @@ async def simulation_page(challenge_id: int):
         body.clear()
         with body:
             _scenario_card()
-            ui.label("How do you split it?").style(
-                f"color: {theme.PRIMARY}; font-size: 15px; font-weight: 700; margin-top: 4px;"
+            ui.label("Choose your approach").style(
+                f"color: {theme.PRIMARY}; font-size: 15px; font-weight: 700; "
+                "letter-spacing: -0.2px; margin-top: 4px;"
             )
 
             chips = []
@@ -102,7 +103,7 @@ async def simulation_page(challenge_id: int):
                 chip = _choice_card(i, c, tag_color)
                 chips.append((chip, tag_color))
 
-            confirm_btn = primary_button("See what happens", _confirm)
+            confirm_btn = primary_button("Confirm Choice", _confirm)
             confirm_btn.disable()
 
             def select(idx: int) -> None:
@@ -161,8 +162,9 @@ async def simulation_page(challenge_id: int):
         xp = attempt.get("xp_earned", 0)
         with body:
             _scenario_card()
-            ui.label("Outcome").style(
-                f"color: {theme.PRIMARY}; font-size: 15px; font-weight: 700; margin-top: 4px;"
+            ui.label("Result").style(
+                f"color: {theme.PRIMARY}; font-size: 15px; font-weight: 700; "
+                "letter-spacing: -0.2px; margin-top: 4px;"
             )
             with card():
                 with ui.row().classes("w-full items-center gap-2 no-wrap"):
@@ -193,15 +195,15 @@ async def simulation_page(challenge_id: int):
                     )
 
             with ui.row().classes("w-full gap-2 no-wrap"):
-                ui.button("Try again", on_click=lambda: _retry()).props(
+                ui.button("Retry", on_click=lambda: _retry()).props(
                     "outline no-caps rounded"
                 ).classes("flex-1").style(
-                    f"color: {theme.SECONDARY}; height: 46px; border-color: {theme.SECONDARY};"
+                    f"color: {theme.SECONDARY}; height: 46px; border-color: {theme.SECONDARY}; font-weight: 600;"
                 )
                 ui.button(
-                    "Back to challenges", on_click=lambda: ui.navigate.to("/challenges")
+                    "Back to Challenges", on_click=lambda: ui.navigate.to("/challenges")
                 ).props("unelevated no-caps rounded").classes("flex-1").style(
-                    f"background-color: {theme.SECONDARY}; color: {theme.WHITE}; height: 46px;"
+                    f"background-color: {theme.SECONDARY}; color: {theme.WHITE}; height: 46px; font-weight: 600;"
                 )
 
     def _retry() -> None:

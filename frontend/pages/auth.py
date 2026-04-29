@@ -49,7 +49,7 @@ def login_page():
         ui.navigate.to("/")
         return
 
-    _branded_header("Welcome back", "Sign in to continue")
+    _branded_header("Welcome back", "Log in to your account")
 
     with _form_container():
         email = ui.input("Email").props("outlined rounded dense autofocus").classes("w-full")
@@ -79,13 +79,13 @@ def login_page():
         email.on("keydown.enter", submit)
         password.on("keydown.enter", submit)
 
-        btn = primary_button("Sign in", submit)
+        btn = primary_button("Log in", submit)
 
         with ui.row().classes("w-full justify-center gap-1").style("margin-top: 12px;"):
             ui.label("Don't have an account?").style(
                 f"color: {theme.GREY_TEXT}; font-size: 13px;"
             )
-            ui.link("Register", "/register").style(
+            ui.link("Create one", "/register").style(
                 f"color: {theme.SECONDARY}; font-size: 13px; font-weight: 600;"
             )
 
@@ -96,7 +96,7 @@ def register_page():
         ui.navigate.to("/")
         return
 
-    _branded_header("Create your account", "Start your financial journey")
+    _branded_header("Create your account", "Start managing your finances today")
 
     with _form_container():
         with ui.row().classes("w-full gap-3 no-wrap"):
@@ -127,7 +127,7 @@ def register_page():
         ).props("outlined rounded dense").classes("w-full")
 
         terms = ui.checkbox(
-            "I agree to the Terms and Privacy Policy", value=False
+            "I accept the Terms of Service and Privacy Policy", value=False
         ).style(f"color: {theme.GREY_TEXT}; font-size: 13px;")
         error_label = ui.label("").style(
             f"color: {theme.ERROR}; font-size: 13px; min-height: 18px;"
@@ -173,6 +173,6 @@ def register_page():
             ui.label("Already have an account?").style(
                 f"color: {theme.GREY_TEXT}; font-size: 13px;"
             )
-            ui.link("Sign in", "/login").style(
+            ui.link("Log in", "/login").style(
                 f"color: {theme.SECONDARY}; font-size: 13px; font-weight: 600;"
             )

@@ -144,7 +144,7 @@ async def quiz_page(challenge_id: int):
                 state["answered"] = False
                 render_question()
         with container:
-            primary_button("See results" if last else "Next question", go)
+            primary_button("Finish" if last else "Next Question", go)
 
     async def _submit() -> None:
         if state["submitting"]:
@@ -167,25 +167,34 @@ async def quiz_page(challenge_id: int):
         xp = attempt.get("xp_earned", 0)
         with body:
             with ui.column().classes("w-full items-center gap-2").style("padding: 32px 12px;"):
-                ui.icon("emoji_events" if perfect else "school").style(
-                    f"color: {theme.WARNING if perfect else theme.SECONDARY}; font-size: 80px;"
+                with ui.element("div").style(
+                    f"background: {theme.WARNING if perfect else theme.SECONDARY}1a; "
+                    "width: 80px; height: 80px; border-radius: 24px; "
+                    "display: flex; align-items: center; justify-content: center;"
+                ):
+                    ui.icon("emoji_events" if perfect else "school").style(
+                        f"color: {theme.WARNING if perfect else theme.SECONDARY}; font-size: 44px;"
+                    )
+                ui.label("All correct!" if perfect else "Quiz complete").style(
+                    f"color: {theme.PRIMARY}; font-size: 22px; font-weight: 800; "
+                    "letter-spacing: -0.5px; margin-top: 4px;"
                 )
-                ui.label("Perfect score!" if perfect else "Good effort!").style(
-                    f"color: {theme.PRIMARY}; font-size: 24px; font-weight: 800;"
+                ui.label(f"{score} of {total} correct answers").style(
+                    f"color: {theme.GREY_TEXT}; font-size: 14px; font-weight: 500;"
                 )
-                ui.label(f"{score} / {total} correct").style(
-                    f"color: {theme.GREY_TEXT}; font-size: 16px; font-weight: 600;"
-                )
-                with ui.row().classes("items-center gap-1").style("margin-top: 8px;"):
+                with ui.row().classes("items-center gap-1").style(
+                    f"background: {theme.SECONDARY}1a; border-radius: 10px; "
+                    "padding: 8px 16px; margin-top: 8px;"
+                ):
                     ui.icon("auto_awesome").style(
-                        f"color: {theme.SECONDARY}; font-size: 20px;"
+                        f"color: {theme.SECONDARY}; font-size: 18px;"
                     )
                     ui.label(f"+{xp} XP earned").style(
-                        f"color: {theme.SECONDARY}; font-size: 16px; font-weight: 700;"
+                        f"color: {theme.SECONDARY}; font-size: 15px; font-weight: 700;"
                     )
-                ui.label("Your attempt is saved").style(
-                    f"color: {theme.GREY_SOFT}; font-size: 11px;"
+                ui.label("Result recorded").style(
+                    f"color: {theme.GREY_SOFT}; font-size: 11px; margin-top: 4px;"
                 )
-            primary_button("Back to challenges", lambda: ui.navigate.to("/challenges"))
+            primary_button("Back to Challenges", lambda: ui.navigate.to("/challenges"))
 
     render_question()

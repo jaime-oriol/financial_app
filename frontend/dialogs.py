@@ -125,7 +125,7 @@ async def show_add_expense(on_success: OnSuccess = None) -> None:
     cats = await get_categories()
 
     with ui.dialog() as dialog, _dialog_card():
-        _dialog_title("Add expense")
+        _dialog_title("Add Expense")
 
         amount = ui.number("Amount", value=None, format="%.2f", min=0.01).props(
             "outlined dense prefix=$"
@@ -140,20 +140,20 @@ async def show_add_expense(on_success: OnSuccess = None) -> None:
 
         async def submit() -> None:
             if not amount.value or amount.value <= 0:
-                ui.notify("Amount must be greater than 0", type="warning")
+                ui.notify("Please enter a valid amount", type="warning")
                 return
             if cat_state["selected_id"] is None:
-                ui.notify("Pick a category", type="warning")
+                ui.notify("Please select a category", type="warning")
                 return
             try:
                 await api.create_expense(
                     float(amount.value),
-                    (desc.value or "").strip() or "No description",
+                    (desc.value or "").strip() or "Expense",
                     d.value or date.today().isoformat(),
                     cat_state["selected_id"],
                 )
                 dialog.close()
-                ui.notify("Expense added", type="positive")
+                ui.notify("Expense recorded", type="positive")
                 if on_success:
                     await on_success()
             except api.ApiException as e:
@@ -170,7 +170,7 @@ async def show_create_budget(on_success: OnSuccess = None) -> None:
     cats = await get_categories()
 
     with ui.dialog() as dialog, _dialog_card():
-        _dialog_title("Create budget")
+        _dialog_title("Set Budget")
 
         ui.label("Category").style(
             f"color: {theme.PRIMARY}; font-size: 13px; font-weight: 600;"
@@ -183,17 +183,17 @@ async def show_create_budget(on_success: OnSuccess = None) -> None:
 
         async def submit() -> None:
             if not amount.value or amount.value <= 0:
-                ui.notify("Limit must be greater than 0", type="warning")
+                ui.notify("Please enter a valid limit", type="warning")
                 return
             if cat_state["selected_id"] is None:
-                ui.notify("Pick a category", type="warning")
+                ui.notify("Please select a category", type="warning")
                 return
             try:
                 await api.create_budget(
                     cat_state["selected_id"], float(amount.value), today.month, today.year
                 )
                 dialog.close()
-                ui.notify("Budget created", type="positive")
+                ui.notify("Budget saved", type="positive")
                 if on_success:
                     await on_success()
             except api.ApiException as e:
@@ -207,9 +207,9 @@ async def show_create_budget(on_success: OnSuccess = None) -> None:
 async def show_create_goal(on_success: OnSuccess = None) -> None:
     """Crear meta de ahorro nueva."""
     with ui.dialog() as dialog, _dialog_card():
-        _dialog_title("New savings goal")
+        _dialog_title("New Goal")
 
-        name = ui.input("What are you saving for?").props("outlined dense").classes("w-full")
+        name = ui.input("Goal name").props("outlined dense").classes("w-full")
         target = ui.number("Target amount", value=None, format="%.2f", min=0.01).props(
             "outlined dense prefix=$"
         ).classes("w-full")
@@ -217,10 +217,10 @@ async def show_create_goal(on_success: OnSuccess = None) -> None:
 
         async def submit() -> None:
             if not name.value or not name.value.strip():
-                ui.notify("Name is required", type="warning")
+                ui.notify("Goal name is required", type="warning")
                 return
             if not target.value or target.value <= 0:
-                ui.notify("Target must be greater than 0", type="warning")
+                ui.notify("Please enter a valid target amount", type="warning")
                 return
             try:
                 await api.create_goal(
@@ -263,7 +263,7 @@ async def show_contribute_goal(goal_id: int, sign: int, on_success: OnSuccess = 
 
         async def submit() -> None:
             if not amount.value or amount.value <= 0:
-                ui.notify("Amount must be greater than 0", type="warning")
+                ui.notify("Please enter a valid amount", type="warning")
                 return
             try:
                 await api.contribute_goal(goal_id, sign * float(amount.value))
@@ -289,8 +289,8 @@ async def show_avatar_picker(current: str | None, on_success: OnSuccess = None) 
     state = {"data_url": current}
 
     with ui.dialog() as dialog, _dialog_card():
-        _dialog_title("Profile photo")
-        ui.label("Upload a photo from your device. We resize it to keep it small.").style(
+        _dialog_title("Update Photo")
+        ui.label("Upload a profile photo. Images are automatically optimised.").style(
             f"color: {theme.GREY_TEXT}; font-size: 12px; margin-bottom: 8px;"
         )
 
@@ -329,7 +329,7 @@ async def show_avatar_picker(current: str | None, on_success: OnSuccess = None) 
                 return
             state["data_url"] = data_url
             render_preview()
-            ui.notify("Photo loaded — tap Save to apply", type="info")
+            ui.notify("Photo ready — tap Save to confirm", type="info")
 
         upload = ui.upload(
             on_upload=handle_upload,
@@ -339,7 +339,7 @@ async def show_avatar_picker(current: str | None, on_success: OnSuccess = None) 
         upload.style("border: 2px dashed " + theme.GREY_SOFT + "; border-radius: 12px; padding: 8px;")
 
         if current:
-            ui.button("Remove current photo", on_click=lambda: _clear()).props(
+            ui.button("Remove photo", on_click=lambda: _clear()).props(
                 "flat no-caps dense"
             ).style(f"color: {theme.ERROR};")
 

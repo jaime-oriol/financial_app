@@ -40,26 +40,22 @@ async def goals_page():
         with refs["list"]:
             if not goals:
                 with card():
-                    empty_state("flag", "No goals yet. Set your first savings goal!")
+                    empty_state("flag", "No goals yet", "Create a savings goal and track your progress over time.")
                 return
             for g in goals:
                 _goal_card(g, reload)
 
     with app_shell(active="/goals"):
         with section(top=22):
-            ui.label("Goals").style(
-                f"color: {theme.PRIMARY}; font-size: 24px; font-weight: 800;"
-            )
-            ui.label("Set savings goals and track your progress").style(
-                f"color: {theme.GREY_TEXT}; font-size: 13px;"
-            )
+            ui.label("Goals").classes("fapp-page-title")
+            ui.label("Define financial goals and track your progress").classes("fapp-page-subtitle")
 
         with section():
             refs["list"] = ui.column().classes("w-full gap-3")
 
         with section():
             primary_button(
-                "New goal",
+                "New Goal",
                 lambda: dialogs.show_create_goal(on_success=reload),
                 icon="add",
             )
@@ -77,7 +73,7 @@ def _goal_card(goal: dict, reload) -> None:
     bar_color = (
         theme.ACCENT if is_complete else (theme.WARNING if is_behind else theme.SECONDARY)
     )
-    badge_text = "Completed" if is_complete else ("Behind" if is_behind else "On track")
+    badge_text = "Completed" if is_complete else ("Behind Pace" if is_behind else "On Track")
 
     async def do_delete() -> None:
         await api.delete_goal(goal["goal_id"])
@@ -141,13 +137,13 @@ def _goal_card(goal: dict, reload) -> None:
         # Botones +/- — feedback CLAVE del profesor (goals transaccionales)
         with ui.row().classes("w-full gap-2 no-wrap").style("margin-top: 4px;"):
             ui.button(
-                "Add money",
+                "Add Funds",
                 icon="add",
                 on_click=lambda: dialogs.show_contribute_goal(
                     goal["goal_id"], +1, on_success=reload
                 ),
             ).props("unelevated no-caps rounded").classes("flex-1").style(
-                f"background-color: {theme.SECONDARY}; color: white; height: 40px;"
+                f"background-color: {theme.SECONDARY}; color: white; height: 40px; font-weight: 600;"
             )
             ui.button(
                 "Withdraw",
@@ -156,7 +152,7 @@ def _goal_card(goal: dict, reload) -> None:
                     goal["goal_id"], -1, on_success=reload
                 ),
             ).props("outline no-caps rounded").classes("flex-1").style(
-                f"color: {theme.SECONDARY}; height: 40px; border-color: {theme.SECONDARY};"
+                f"color: {theme.SECONDARY}; height: 40px; border-color: {theme.SECONDARY}; font-weight: 600;"
             )
 
 
