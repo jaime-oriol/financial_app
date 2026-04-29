@@ -10,10 +10,22 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![NiceGUI](https://img.shields.io/badge/NiceGUI-2.13-3b9eff)](https://nicegui.io/)
 [![Neon](https://img.shields.io/badge/Neon-PostgreSQL-00e599?logo=postgresql)](https://neon.tech/)
-[![Tests](https://img.shields.io/badge/tests-60_passing-success)](backend/tests)
+[![Tests](https://img.shields.io/badge/tests-64_passing-success)](backend/tests)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 </div>
+
+---
+
+## Live Demo
+
+| Service | URL |
+|---------|-----|
+| **Frontend** | https://fapp-web.onrender.com |
+| **Backend API** | https://fapp-api.onrender.com |
+| **API Docs** | https://fapp-api.onrender.com/docs |
+
+Both services auto-redeploy on every push to `main`.
 
 ---
 
@@ -29,9 +41,9 @@ Every interaction is transactional: streaks are computed from expense history, s
 - **Dashboard** — total spending this month, real streak (consecutive days with expenses), 7-day spending trend chart, budget usage, recent transactions
 - **Budget tracker** — donut chart with center total, per-category progress bars, full CRUD on expenses and budgets
 - **Savings goals** — create goals with target and deadline, add or withdraw money via dialog, behind-pace warning derived from real progress over time
-- **Challenges** — quiz and simulation challenges with content stored in DB; attempts persisted, XP calculated server-side
+- **Challenges** — quiz and simulation challenges with content stored in DB; attempts persisted, XP calculated server-side; progressive level unlock (Beginner → Intermediate → Advanced)
 - **Achievements** — five badges computed live from the user's data (Hot Streak, First Saver, Budget Pro, Quiz Master, Goal Crusher)
-- **Profile** — real stats: streak, total XP, expenses count, goals count, member since
+- **Profile** — real stats: streak, total XP, expenses count, goals count, member since; photo avatar upload
 
 ### Use cases covered
 
@@ -58,7 +70,7 @@ financial_app/
 │       ├── main.py           # FastAPI app + CORS + lifespan seed
 │       ├── config.py
 │       ├── database.py
-│       └── seed.py           # 6 categories + 2 challenges (quiz + simulation)
+│       └── seed.py           # 6 categories + challenges (quiz + simulation, multi-level)
 │
 ├── frontend/                 # NiceGUI Python web app
 │   ├── app.py                # Entry point + page registration
@@ -77,7 +89,6 @@ financial_app/
 │       ├── goals.py          # /goals
 │       └── profile.py        # /profile
 │
-├── frontend_v2/              # Original Flutter prototype (kept for reference)
 └── docs/                     # OPPR.pdf, Solution_design.pdf, logo.png
 ```
 
@@ -89,8 +100,9 @@ financial_app/
 
 - Python 3.11+
 
-> **Database:** Shared PostgreSQL on [Neon](https://neon.tech).
-> **Backend:** Deployed on Render at [`https://fapp-api.onrender.com`](https://fapp-api.onrender.com/docs). Auto-redeploys on every push to `main`.
+> **Database:** Shared PostgreSQL on [Neon](https://neon.tech).  
+> **Backend:** Deployed on Render at [`https://fapp-api.onrender.com`](https://fapp-api.onrender.com/docs). Auto-redeploys on every push to `main`.  
+> **Frontend:** Deployed on Render at [`https://fapp-web.onrender.com`](https://fapp-web.onrender.com). Auto-redeploys on every push to `main`.
 
 ### 1. Clone the repository
 
@@ -99,7 +111,7 @@ git clone https://github.com/jaime-oriol/financial_app.git
 cd financial_app
 ```
 
-### 2. Frontend
+### 2. Run frontend locally
 
 ```bash
 cd frontend
@@ -112,7 +124,7 @@ Opens at `http://localhost:8080`. Connects to the deployed backend by default.
 
 To point at a local backend: `API_URL=http://localhost:8000/api .venv/bin/python app.py`
 
-### 3. Backend (only needed for local development)
+### 3. Run backend locally (only needed for local development)
 
 ```bash
 cd backend
@@ -131,7 +143,7 @@ cd backend
 .venv/bin/python -m pytest tests/ -v
 ```
 
-60 tests against SQLite in-memory.
+64 tests against SQLite in-memory — no Neon connection needed.
 
 ---
 
@@ -142,6 +154,7 @@ cd backend
 | `POST` | `/api/auth/register` | Create account |
 | `POST` | `/api/auth/login` | Login and obtain JWT |
 | `GET`  | `/api/auth/me` | Current user info |
+| `PATCH` | `/api/auth/me` | Update avatar |
 | `GET`  | `/api/categories` | List categories |
 | `POST` | `/api/expenses` | Create expense |
 | `GET`  | `/api/expenses` | List expenses (filters: `start_date`, `end_date`, `category_id`) |
@@ -156,6 +169,7 @@ cd backend
 | `GET`  | `/api/challenges` | List challenges with user status |
 | `POST` | `/api/challenges/{id}/attempt` | Submit attempt (XP computed server-side) |
 | `GET`  | `/api/dashboard` | Spending breakdown, streak, trend, budgets, recent transactions, XP, achievements |
+| `GET`  | `/health` | Health check |
 
 ---
 
@@ -169,7 +183,7 @@ cd backend
 - **Neon (PostgreSQL)** — serverless cloud database
 - **JWT (python-jose)** — token-based authentication
 - **Pydantic v2** — request and response validation
-- **pytest** — 60 tests covering every endpoint and business rule
+- **pytest** — 64 tests covering every endpoint and business rule
 
 ### Frontend
 
@@ -185,12 +199,12 @@ Seven tables on Neon (see `docs/Solution_design.pdf`, p. 11 for the ERD):
 
 | Table | Primary Key | Key Columns |
 |-------|-------------|-------------|
-| **users** | user_id (INT) | name, surname, birthdate, email (UNIQUE), password (bcrypt) |
+| **users** | user_id (INT) | name, surname, birthdate, email (UNIQUE), password (bcrypt), avatar (TEXT) |
 | **categories** | category_id (INT) | name, icon, description |
 | **expenses** | expense_id (INT) | user_id FK, category_id FK, amount, description, expense_date |
 | **budgets** | budget_id (INT) | user_id FK, category_id FK, month, year, limit_amount |
 | **goals** | goal_id (INT) | user_id FK, name, target_amount, saved_amount, deadline |
-| **challenges** | challenge_id (INT) | kind, title, content (JSON), xp_reward |
+| **challenges** | challenge_id (INT) | kind, title, content (JSON), xp_reward, level |
 | **challenge_attempts** | attempt_id (INT) | user_id FK, challenge_id FK, payload (JSON), xp_earned |
 
 ---

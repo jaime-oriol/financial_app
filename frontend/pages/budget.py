@@ -181,8 +181,8 @@ def _budget_row(b: dict, reload) -> None:
         await reload()
 
     with ui.row().classes("w-full no-wrap items-stretch gap-0").style(
-        f"background: {theme.WHITE}; border-radius: 14px; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.04); overflow: hidden;"
+        f"background: {theme.WHITE}; border-radius: 18px; "
+        "box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.05); overflow: hidden;"
     ):
         ui.element("div").style(f"width: 4px; background-color: {color};")
         with ui.column().classes("flex-1 gap-2").style("padding: 14px;"):
