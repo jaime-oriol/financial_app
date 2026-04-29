@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping backend
-        run: curl -sf https://fapp-api.onrender.com/health
+        run: curl -sf --retry 3 --retry-delay 10 https://fapp-api.onrender.com/health || true
 
       - name: Ping frontend
-        run: curl -sf https://financial-app-xai5.onrender.com || true
+        run: curl -sf --retry 2 --retry-delay 8 https://financial-app-xai5.onrender.com || true
