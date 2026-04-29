@@ -31,15 +31,17 @@ async def get_categories() -> list[dict]:
 
 def _dialog_card():
     return ui.card().style(
-        f"width: 380px; max-width: 94vw; border-radius: 24px; padding: 24px; "
-        f"background: {theme.WHITE}; box-shadow: 0 24px 64px rgba(0,0,0,0.18);"
+        f"width: 390px; max-width: 94vw; border-radius: 28px; padding: 26px 24px; "
+        f"background: {theme.WHITE}; "
+        "border: 1px solid rgba(22,33,62,0.07); "
+        "box-shadow: 0 8px 32px rgba(10,18,40,0.16), 0 40px 80px rgba(10,18,40,0.12);"
     )
 
 
 def _dialog_title(text: str) -> None:
     ui.label(text).style(
-        f"color: {theme.PRIMARY}; font-size: 19px; font-weight: 800; "
-        "letter-spacing: -0.3px; margin-bottom: 6px;"
+        f"color: {theme.PRIMARY}; font-size: 20px; font-weight: 800; "
+        "letter-spacing: -0.5px; margin-bottom: 8px;"
     )
 
 
@@ -109,13 +111,17 @@ def _date_input(label: str, default: str | None = None):
 
 def _dialog_actions(dialog: "ui.dialog", primary_text: str, on_primary,
                     primary_color: str = theme.SECONDARY) -> None:
-    with ui.row().classes("w-full justify-end gap-2").style("margin-top: 14px;"):
+    with ui.row().classes("w-full justify-end gap-2").style("margin-top: 16px;"):
         ui.button("Cancel", on_click=dialog.close).props("flat no-caps").style(
-            f"color: {theme.GREY_TEXT};"
+            f"color: {theme.GREY_TEXT}; font-weight: 600; font-size: 13.5px;"
         )
         ui.button(primary_text, on_click=on_primary).props(
             "unelevated no-caps rounded"
-        ).style(f"background-color: {primary_color}; color: white; min-width: 90px;")
+        ).style(
+            f"background-color: {primary_color}; color: white; "
+            "min-width: 100px; font-weight: 600; font-size: 13.5px; "
+            "box-shadow: 0 4px 12px rgba(38,117,227,0.30);"
+        )
 
 
 # --- Dialogs publicos ---
@@ -367,10 +373,12 @@ def show_confirm(message: str, on_confirm: Callable[[], Awaitable[None]],
                  confirm_text: str = "Delete", danger: bool = True) -> None:
     """Confirmacion generica con accion async."""
     with ui.dialog() as dialog, ui.card().style(
-        "border-radius: 14px; padding: 20px; min-width: 280px; max-width: 92vw;"
+        "border-radius: 22px; padding: 24px 22px; min-width: 300px; max-width: 92vw; "
+        "border: 1px solid rgba(22,33,62,0.07); "
+        "box-shadow: 0 8px 32px rgba(10,18,40,0.14);"
     ):
         ui.label(message).style(
-            f"color: {theme.PRIMARY}; font-size: 15px; font-weight: 600;"
+            f"color: {theme.PRIMARY}; font-size: 16px; font-weight: 700; letter-spacing: -0.3px;"
         )
         with ui.row().classes("w-full justify-end gap-2").style("margin-top: 8px;"):
             ui.button("Cancel", on_click=dialog.close).props("flat no-caps").style(

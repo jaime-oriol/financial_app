@@ -61,8 +61,9 @@ async def challenges_page():
         # XP banner
         with section(top=14):
             with ui.row().classes("w-full items-center no-wrap gap-3").style(
-                "background: linear-gradient(135deg, #2675E3 0%, #16213E 100%); "
-                "border-radius: 16px; padding: 16px;"
+                "background: linear-gradient(135deg, #2563EB 0%, #1A2D6E 100%); "
+                "border-radius: 18px; padding: 18px; "
+                "box-shadow: 0 4px 20px rgba(37,99,235,0.30);"
             ):
                 with ui.element("div").style(
                     "background: rgba(255,255,255,0.16); width: 44px; height: 44px; "

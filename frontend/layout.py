@@ -37,6 +37,9 @@ def page_setup(title: str = "FAPP") -> None:
         f"""
         body {{
             background-color: {theme.BG};
+            background-image:
+                radial-gradient(ellipse 90% 40% at 50% -10%, rgba(38,117,227,0.07) 0%, transparent 60%);
+            background-attachment: fixed;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: {theme.PRIMARY};
             -webkit-font-smoothing: antialiased;
@@ -46,41 +49,52 @@ def page_setup(title: str = "FAPP") -> None:
         }}
         .nicegui-content {{ padding: 0; }}
         @keyframes fapp-fade-in {{
-            from {{ opacity: 0; transform: translateY(6px); }}
+            from {{ opacity: 0; transform: translateY(10px); }}
             to {{ opacity: 1; transform: translateY(0); }}
         }}
-        .nicegui-content > * {{ animation: fapp-fade-in 0.28s ease-out; }}
+        .nicegui-content > * {{
+            animation: fapp-fade-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }}
         .fapp-card {{
             background: {theme.WHITE};
             border-radius: 20px;
-            border: 1px solid rgba(0,0,0,0.055);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(22,33,62,0.07);
+            box-shadow:
+                0 1px 2px rgba(22,33,62,0.04),
+                0 4px 16px rgba(22,33,62,0.07);
             padding: 18px;
-            transition: box-shadow 0.2s ease, transform 0.2s ease;
+            transition:
+                box-shadow 0.25s cubic-bezier(0.16,1,0.3,1),
+                transform 0.25s cubic-bezier(0.16,1,0.3,1);
         }}
         .fapp-card:hover {{
-            box-shadow: 0 4px 28px rgba(0,0,0,0.10);
-            transform: translateY(-1px);
+            box-shadow:
+                0 1px 2px rgba(22,33,62,0.04),
+                0 10px 36px rgba(22,33,62,0.12);
+            transform: translateY(-2px);
         }}
         .fapp-stat-num {{
             font-size: 26px;
             font-weight: 800;
             line-height: 1;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.8px;
             font-variant-numeric: tabular-nums;
         }}
-        .fapp-money {{ font-variant-numeric: tabular-nums; letter-spacing: -0.2px; }}
+        .fapp-money {{
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.3px;
+        }}
         .fapp-section-label {{
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
-            letter-spacing: 1.4px;
+            letter-spacing: 1.8px;
             color: {theme.GREY_TEXT};
             text-transform: uppercase;
         }}
         .fapp-page-title {{
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 800;
-            letter-spacing: -0.6px;
+            letter-spacing: -0.8px;
             color: {theme.PRIMARY};
             line-height: 1.1;
         }}
@@ -88,35 +102,68 @@ def page_setup(title: str = "FAPP") -> None:
             font-size: 13px;
             color: {theme.GREY_TEXT};
             font-weight: 400;
-            margin-top: 2px;
+            margin-top: 3px;
+            line-height: 1.5;
         }}
         html {{ scroll-behavior: smooth; }}
-        .q-btn:active:not(.disabled) {{ transform: scale(0.97); transition: transform 0.1s; }}
-        .q-notification {{
-            border-radius: 14px !important;
-            font-weight: 600 !important;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.14) !important;
+        .q-btn {{
+            transition: filter 0.15s ease, transform 0.1s ease !important;
+            letter-spacing: 0.2px;
         }}
-        .q-field--outlined .q-field__control {{ border-radius: 14px !important; }}
+        .q-btn:not(.disabled):hover {{ filter: brightness(1.06); }}
+        .q-btn:active:not(.disabled) {{
+            transform: scale(0.97) !important;
+            transition: transform 0.08s ease !important;
+        }}
+        .q-notification {{
+            border-radius: 16px !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            letter-spacing: 0.1px !important;
+            box-shadow:
+                0 4px 12px rgba(10,18,40,0.12),
+                0 16px 40px rgba(10,18,40,0.18) !important;
+            padding: 12px 18px !important;
+        }}
+        .q-field--outlined .q-field__control {{
+            border-radius: 14px !important;
+            transition: box-shadow 0.2s ease !important;
+        }}
         .q-field--outlined .q-field__control:before {{
-            border-color: #E4E8EE !important;
+            border-color: rgba(22,33,62,0.14) !important;
             border-width: 1.5px !important;
+            transition: border-color 0.2s ease, border-width 0.15s ease !important;
         }}
         .q-field--outlined.q-field--focused .q-field__control:before {{
             border-color: {theme.SECONDARY} !important;
             border-width: 2px !important;
         }}
-        .q-field__label {{ font-weight: 500 !important; }}
-        .q-dialog__backdrop {{
-            backdrop-filter: blur(6px) !important;
-            -webkit-backdrop-filter: blur(6px) !important;
-            background: rgba(10,18,40,0.5) !important;
+        .q-field--outlined.q-field--focused .q-field__control {{
+            box-shadow: 0 0 0 4px {theme.SECONDARY}18 !important;
         }}
-        .q-card {{ border-radius: 22px !important; }}
-        ::-webkit-scrollbar {{ width: 4px; height: 4px; }}
-        ::-webkit-scrollbar-thumb {{ background: {theme.GREY_SOFT}66; border-radius: 2px; }}
+        .q-field__label {{
+            font-weight: 500 !important;
+            font-size: 13.5px !important;
+        }}
+        .q-field__native, .q-field__input {{
+            font-weight: 500 !important;
+            color: {theme.PRIMARY} !important;
+        }}
+        .q-dialog__backdrop {{
+            backdrop-filter: blur(12px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+            background: rgba(8,14,32,0.62) !important;
+        }}
+        .q-card {{ border-radius: 24px !important; }}
+        ::-webkit-scrollbar {{ width: 3px; height: 3px; }}
+        ::-webkit-scrollbar-thumb {{
+            background: rgba(22,33,62,0.16);
+            border-radius: 2px;
+        }}
         ::-webkit-scrollbar-track {{ background: transparent; }}
         .q-linear-progress, .q-linear-progress__track {{ border-radius: 99px !important; }}
+        .q-uploader {{ border-radius: 14px !important; }}
+        .q-checkbox__inner {{ color: {theme.SECONDARY} !important; }}
         """
     )
 
@@ -142,32 +189,38 @@ def app_shell(active: str | None = None) -> Iterator[None]:
     ).style(f"background-color: {theme.BG};"):
         yield
 
-    # Bottom navigation (q-footer = fijo)
     with ui.footer().classes("q-py-none").style(
-        f"background-color: {theme.WHITE}; "
-        "box-shadow: 0 -1px 0 rgba(0,0,0,0.06), 0 -8px 24px rgba(0,0,0,0.05);"
+        "background: rgba(255,255,255,0.86); "
+        "backdrop-filter: saturate(200%) blur(24px); "
+        "-webkit-backdrop-filter: saturate(200%) blur(24px); "
+        "border-top: 1px solid rgba(22,33,62,0.07); "
+        "box-shadow: 0 -4px 28px rgba(22,33,62,0.07);"
     ):
         with ui.row().classes(
             "w-full max-w-[480px] mx-auto justify-around items-center"
-        ).style("padding: 4px 4px 8px 4px;"):
+        ).style("padding: 6px 4px 10px 4px;"):
             for icon, label, path in NAV_ITEMS:
                 _nav_item(icon, label, path, is_active=(active == path))
 
 
 def _nav_item(icon: str, label: str, path: str, is_active: bool) -> None:
-    color = theme.SECONDARY if is_active else "#8E9BAA"
+    color = theme.SECONDARY if is_active else "#94A3B8"
     weight = "700" if is_active else "500"
-    icon_bg = f"{theme.SECONDARY}18" if is_active else "transparent"
+    icon_bg = f"{theme.SECONDARY}14" if is_active else "transparent"
     with ui.column().classes("items-center cursor-pointer gap-0").style(
-        "padding: 4px 6px 4px 6px; min-width: 60px;"
+        "padding: 5px 8px 4px 8px; min-width: 58px;"
     ).on("click", lambda: ui.navigate.to(path)):
         with ui.element("div").style(
-            f"background: {icon_bg}; border-radius: 14px; padding: 4px 16px; "
-            "transition: background 0.2s ease; margin-bottom: 2px;"
+            f"background: {icon_bg}; border-radius: 12px; padding: 5px 14px 4px 14px; "
+            "transition: background 0.25s cubic-bezier(0.16,1,0.3,1); margin-bottom: 3px;"
         ):
-            ui.icon(icon).style(f"color: {color}; font-size: 22px;")
+            ui.icon(icon).style(
+                f"color: {color}; font-size: 20px; "
+                "transition: color 0.2s ease;"
+            )
         ui.label(label).style(
-            f"color: {color}; font-size: 10px; font-weight: {weight};"
+            f"color: {color}; font-size: 10px; font-weight: {weight}; "
+            "letter-spacing: 0.3px; transition: color 0.2s ease;"
         )
 
 
@@ -188,7 +241,8 @@ def section(title: str | None = None, padding_x: int = 16, top: int = 18) -> Ite
 def card(padding: int = 18) -> Iterator[None]:
     with ui.column().classes("w-full gap-2").style(
         f"background: {theme.WHITE}; border-radius: 20px; "
-        "box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05); "
+        "border: 1px solid rgba(22,33,62,0.07); "
+        "box-shadow: 0 1px 2px rgba(22,33,62,0.04), 0 4px 16px rgba(22,33,62,0.07); "
         f"padding: {padding}px;"
     ):
         yield
@@ -223,12 +277,13 @@ def render_avatar(container, user: dict, size: int = 64, font_size: int = 28) ->
 
 def empty_state(icon: str, message: str, subtitle: str | None = None) -> None:
     """Estado vacio para listas sin datos."""
-    with ui.column().classes("w-full items-center gap-2").style("padding: 32px 16px;"):
+    with ui.column().classes("w-full items-center gap-2").style("padding: 36px 16px 28px 16px;"):
         with ui.element("div").style(
-            f"background: {theme.GREY_BG}; width: 56px; height: 56px; border-radius: 16px; "
+            f"background: {theme.GREY_BG}; width: 60px; height: 60px; border-radius: 18px; "
+            "border: 1px solid rgba(22,33,62,0.06); "
             "display: flex; align-items: center; justify-content: center;"
         ):
-            ui.icon(icon).style(f"color: {theme.GREY_SOFT}; font-size: 26px;")
+            ui.icon(icon).style(f"color: {theme.GREY_SOFT}; font-size: 28px;")
         ui.label(message).style(
             f"color: {theme.PRIMARY}; font-size: 14px; font-weight: 600; text-align: center;"
         )

@@ -46,9 +46,10 @@ async def simulation_page(challenge_id: int):
     choices = content["choices"]
     state = {"selected": None, "submitting": False}
 
-    # Header
     with ui.row().classes("w-full max-w-[480px] mx-auto items-center gap-2").style(
-        f"background: {theme.WHITE}; padding: 12px 16px; border-bottom: 1px solid {theme.GREY_BG};"
+        f"background: {theme.WHITE}; padding: 14px 16px; "
+        "border-bottom: 1px solid rgba(22,33,62,0.07); "
+        "box-shadow: 0 1px 8px rgba(22,33,62,0.05);"
     ):
         ui.button(icon="arrow_back").props("flat dense round").on(
             "click", lambda: ui.navigate.to("/challenges")
@@ -123,9 +124,10 @@ async def simulation_page(challenge_id: int):
 
     def _choice_card(idx: int, c: dict, tag_color: str) -> ui.element:
         chip = ui.column().classes("w-full gap-1 cursor-pointer").style(
-            f"background-color: {theme.WHITE}; border: 2px solid transparent; "
-            "border-radius: 14px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); "
-            "transition: box-shadow 0.18s ease, border-color 0.18s ease;"
+            f"background-color: {theme.WHITE}; border: 1.5px solid rgba(22,33,62,0.08); "
+            "border-radius: 16px; padding: 16px; "
+            "box-shadow: 0 1px 2px rgba(22,33,62,0.04), 0 2px 8px rgba(22,33,62,0.05); "
+            "transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;"
         )
         with chip:
             with ui.row().classes("w-full items-center justify-between no-wrap"):

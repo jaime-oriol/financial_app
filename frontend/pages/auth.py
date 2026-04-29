@@ -13,8 +13,8 @@ from layout import page_setup, primary_button
 def _branded_header(title: str, subtitle: str) -> None:
     page_setup()
     with ui.element("div").classes("w-full").style(
-        "background: linear-gradient(150deg, #0D1B3E 0%, #16213E 52%, #1e3574 100%); "
-        "padding: 56px 28px 44px 28px;"
+        "background: linear-gradient(150deg, #090F24 0%, #14203C 50%, #1A2D6E 100%); "
+        "padding: 60px 28px 48px 28px;"
     ):
         with ui.column().classes("w-full max-w-[480px] mx-auto gap-0 items-start"):
             with ui.element("div").style(

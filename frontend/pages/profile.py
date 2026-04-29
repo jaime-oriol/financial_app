@@ -136,8 +136,9 @@ async def profile_page():
 def _stat_card(label: str, value: str, icon: str, color: str) -> ui.label:
     """Crea un card de stat y devuelve la label del numero (mutable)."""
     with ui.column().classes("flex-1 gap-1").style(
-        f"background: {theme.WHITE}; border-radius: 18px; padding: 14px 8px; "
-        "box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.05); "
+        f"background: {theme.WHITE}; border-radius: 18px; padding: 16px 8px; "
+        "border: 1px solid rgba(22,33,62,0.07); "
+        "box-shadow: 0 1px 2px rgba(22,33,62,0.04), 0 4px 14px rgba(22,33,62,0.07); "
         "align-items: center; min-width: 0;"
     ):
         with ui.element("div").style(
@@ -174,17 +175,26 @@ def _render_achievements(container: ui.row, achievements: list[dict]) -> None:
 def _achievement_chip(a: dict) -> None:
     earned = a["earned"]
     color = a["color"]
-    bg = f"{color}1f" if earned else theme.GREY_BG
+    bg = f"{color}18" if earned else theme.GREY_BG
+    border = f"1px solid {color}30" if earned else "1px solid rgba(22,33,62,0.06)"
     icon_color = color if earned else theme.GREY_SOFT
     text_color = theme.PRIMARY if earned else theme.GREY_SOFT
     with ui.column().classes("items-center gap-1").style(
-        f"background-color: {bg}; border-radius: 14px; padding: 12px 8px; "
+        f"background-color: {bg}; border-radius: 16px; padding: 14px 8px; "
+        f"border: {border}; "
         f"min-width: 88px; flex: 1; "
-        f"opacity: {1.0 if earned else 0.6}; transition: transform 0.18s ease;"
+        f"opacity: {1.0 if earned else 0.5}; transition: transform 0.2s ease, opacity 0.2s ease;"
     ).tooltip(a["description"]):
-        ui.icon(a["icon"]).style(f"color: {icon_color}; font-size: 26px;")
+        icon_bg = f"{color}22" if earned else theme.GREY_BG
+        with ui.element("div").style(
+            f"background: {icon_bg}; "
+            "width: 38px; height: 38px; border-radius: 12px; "
+            "display: flex; align-items: center; justify-content: center;"
+        ):
+            ui.icon(a["icon"]).style(f"color: {icon_color}; font-size: 22px;")
         ui.label(a["name"]).style(
-            f"color: {text_color}; font-size: 11px; font-weight: 600; text-align: center;"
+            f"color: {text_color}; font-size: 10.5px; font-weight: 700; "
+            "text-align: center; letter-spacing: 0.1px;"
         )
 
 

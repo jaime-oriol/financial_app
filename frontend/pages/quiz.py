@@ -38,9 +38,10 @@ async def quiz_page(challenge_id: int):
     questions = challenge["content"]["questions"]
     state = {"index": 0, "selected": None, "answered": False, "score": 0, "submitting": False}
 
-    # Header
     with ui.row().classes("w-full max-w-[480px] mx-auto items-center gap-2").style(
-        f"background: {theme.WHITE}; padding: 12px 16px; border-bottom: 1px solid {theme.GREY_BG};"
+        f"background: {theme.WHITE}; padding: 14px 16px; "
+        "border-bottom: 1px solid rgba(22,33,62,0.07); "
+        "box-shadow: 0 1px 8px rgba(22,33,62,0.05);"
     ):
         ui.button(icon="arrow_back").props("flat dense round").on(
             "click", lambda: ui.navigate.to("/challenges")
@@ -95,12 +96,14 @@ async def quiz_page(challenge_id: int):
                 chip.on_click(lambda i=i: select(i))
 
     def _option_button(idx: int, label: str) -> ui.button:
-        btn = ui.button(f"{chr(65 + idx)}. {label}").props(
+        btn = ui.button(f"{chr(65 + idx)}.  {label}").props(
             "no-caps unelevated rounded"
         ).classes("w-full justify-start").style(
             f"background-color: {theme.GREY_BG}; color: {theme.PRIMARY}; "
-            "border: 2px solid transparent; padding: 14px; height: auto; "
-            "text-align: left; font-weight: 500;"
+            "border: 1.5px solid rgba(22,33,62,0.09); "
+            "padding: 14px 16px; height: auto; "
+            "text-align: left; font-weight: 500; font-size: 13.5px; "
+            "transition: background-color 0.15s ease, border-color 0.15s ease;"
         )
         return btn
 

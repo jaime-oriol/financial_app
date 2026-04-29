@@ -10,10 +10,10 @@ WARNING = "#F39C12"       # Streak, behind-pace, alertas
 ERROR = "#E74C3C"         # Gastos, sobre-presupuesto
 
 # --- Grises y fondos ---
-GREY_TEXT = "#7F8C8D"     # Texto secundario, labels
-GREY_SOFT = "#BDC3C7"     # Placeholders, iconos disabled
-GREY_BG = "#EEF1F5"       # Fondos de inputs y cards
-BG = "#F4F6F9"            # Background de la app
+GREY_TEXT = "#6B7A99"     # Texto secundario, labels
+GREY_SOFT = "#B4BDD4"     # Placeholders, iconos disabled
+GREY_BG = "#E8EDF6"       # Fondos de inputs y cards
+BG = "#EEF2FB"            # Background de la app
 WHITE = "#FFFFFF"
 
 # --- Categorias (deben coincidir con seeds del backend) ---

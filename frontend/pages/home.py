@@ -73,8 +73,8 @@ async def home_page():
     with app_shell(active="/"):
         # Header con saludo + total del mes (gradiente sutil)
         with ui.column().classes("w-full gap-1").style(
-            "background: linear-gradient(145deg, #0D1B3E 0%, #16213E 50%, #1e3574 100%); "
-            "padding: 48px 22px 28px 22px; "
+            "background: linear-gradient(145deg, #090F24 0%, #14203C 42%, #1A2D6E 100%); "
+            "padding: 52px 22px 30px 22px; "
             "border-bottom-left-radius: 32px; border-bottom-right-radius: 32px;"
         ):
             with ui.row().classes("w-full items-center gap-3 no-wrap"):
@@ -104,9 +104,8 @@ async def home_page():
                 "margin-top: 6px; min-height: 18px;"
             )
 
-        # Stats: streak | budget %
         with ui.row().classes("w-full gap-3 no-wrap").style("padding: 16px;"):
-            with ui.column().classes("flex-1 fapp-card gap-2").style("padding: 16px;"):
+            with ui.column().classes("flex-1 fapp-card gap-2").style("padding: 18px 16px;"):
                 with ui.row().classes("w-full justify-between items-center no-wrap"):
                     ui.label("Streak").classes("fapp-section-label")
                     with ui.element("div").style(
@@ -118,7 +117,7 @@ async def home_page():
                             f"color: {theme.WARNING}; font-size: 16px;"
                         )
                 refs["streak"] = ui.label("0 days").classes("fapp-stat-num")
-            with ui.column().classes("flex-1 fapp-card gap-2").style("padding: 16px;"):
+            with ui.column().classes("flex-1 fapp-card gap-2").style("padding: 18px 16px;"):
                 with ui.row().classes("w-full justify-between items-center no-wrap"):
                     ui.label("Budget").classes("fapp-section-label")
                     with ui.element("div").style(
