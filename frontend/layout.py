@@ -168,6 +168,33 @@ def card(padding: int = 18) -> Iterator[None]:
         yield
 
 
+def render_avatar(container, user: dict, size: int = 64, font_size: int = 28) -> None:
+    """Renderiza el avatar del usuario en `container` (lo limpia primero).
+    - Si tiene foto (data URL): la pinta circular con object-fit cover.
+    - Si no: circulo de color estable por user_id con la inicial del nombre.
+    """
+    container.clear()
+    with container:
+        avatar = user.get("avatar")
+        if avatar and avatar.startswith("data:"):
+            ui.image(avatar).style(
+                f"width: {size}px; height: {size}px; border-radius: 50%; "
+                "object-fit: cover; display: block;"
+            )
+        else:
+            color = theme.avatar_color(user.get("user_id", 0))
+            initial = (user.get("name") or "?")[0].upper()
+            with ui.element("div").style(
+                f"width: {size}px; height: {size}px; border-radius: 50%; "
+                f"background: {color}; display: flex; align-items: center; "
+                "justify-content: center;"
+            ):
+                ui.label(initial).style(
+                    f"color: white; font-size: {font_size}px; font-weight: 700; "
+                    "line-height: 1;"
+                )
+
+
 def empty_state(icon: str, message: str) -> None:
     """Estado vacio bonito para reemplazar listas sin datos."""
     with ui.column().classes("w-full items-center gap-2").style("padding: 32px 16px;"):

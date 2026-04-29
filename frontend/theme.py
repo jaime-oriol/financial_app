@@ -44,6 +44,18 @@ def category_icon(category_id: int) -> str:
     return CATEGORY_ICONS.get(category_id, "category")
 
 
+_INITIAL_COLORS = ["#2675E3", "#27AE60", "#E74C3C", "#F39C12", "#8E44AD", "#1ABC9C"]
+
+
+def avatar_color(user_id: int) -> str:
+    """Color estable por user_id para el fallback con inicial."""
+    return _INITIAL_COLORS[user_id % len(_INITIAL_COLORS)]
+
+
+def is_photo_avatar(avatar: str | None) -> bool:
+    return bool(avatar and avatar.startswith("data:"))
+
+
 def fmt_money(amount: float | int | str | None, decimals: int = 2) -> str:
     """Formatear cantidad como moneda. Acepta str (Decimal serializado)."""
     if amount is None:

@@ -16,7 +16,7 @@ from nicegui import ui
 import api
 import dialogs
 import theme
-from layout import app_shell, card, empty_state, require_auth, section
+from layout import app_shell, card, empty_state, render_avatar, require_auth, section
 
 
 def _greeting() -> str:
@@ -45,8 +45,8 @@ async def home_page():
             ui.notify(f"Error: {e.message}", type="negative")
             return
 
-        avatar = me.get("avatar") or "👋"
-        refs["greeting"].text = f"{avatar}  {_greeting()}, {me['name']}!"
+        render_avatar(refs["avatar"], me, size=36, font_size=16)
+        refs["greeting"].text = f"{_greeting()}, {me['name']}!"
 
         spending = dashboard.get("spending_by_category", [])
         total = sum(float(s["total"]) for s in spending)
@@ -77,9 +77,18 @@ async def home_page():
             "padding: 36px 22px 24px 22px; "
             "border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;"
         ):
-            refs["greeting"] = ui.label(_greeting()).style(
-                f"color: {theme.GREY_SOFT}; font-size: 14px;"
-            )
+            with ui.row().classes("w-full items-center gap-3 no-wrap"):
+                refs["avatar"] = ui.element("div").style(
+                    "width: 36px; height: 36px; flex-shrink: 0;"
+                )
+                with refs["avatar"]:
+                    ui.element("div").style(
+                        "width: 36px; height: 36px; border-radius: 50%; "
+                        "background: rgba(255,255,255,0.15);"
+                    )
+                refs["greeting"] = ui.label(_greeting()).style(
+                    f"color: {theme.WHITE}; font-size: 14px; font-weight: 500;"
+                )
             ui.label("Total spending this month").style(
                 "color: rgba(255,255,255,0.7); font-size: 11px; "
                 "font-weight: 600; letter-spacing: 1px; text-transform: uppercase;"

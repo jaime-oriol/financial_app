@@ -279,57 +279,75 @@ async def show_contribute_goal(goal_id: int, sign: int, on_success: OnSuccess = 
     dialog.open()
 
 
-AVATAR_OPTIONS = [
-    "🦊", "🐱", "🐻", "🐼", "🐸", "🐰", "🦁", "🐨",
-    "🌟", "🚀", "💎", "🎯", "🔥", "⚡", "🏆", "🎨",
-]
-
-
 async def show_avatar_picker(current: str | None, on_success: OnSuccess = None) -> None:
-    """Selector de avatar emoji. Se persiste via PATCH /auth/me."""
-    state = {"selected": current}
+    """Subir foto de perfil. Se redimensiona client-side a 256x256 (canvas) y
+    se persiste como data URL JPEG en /auth/me. Tambien permite eliminarla.
+    """
+    import base64
+
+    state = {"data_url": current}
 
     with ui.dialog() as dialog, _dialog_card():
-        _dialog_title("Choose your avatar")
-        ui.label("Pick an emoji that represents you").style(
+        _dialog_title("Profile photo")
+        ui.label("Upload a photo from your device. We resize it to keep it small.").style(
             f"color: {theme.GREY_TEXT}; font-size: 12px; margin-bottom: 8px;"
         )
 
-        grid = ui.grid(columns=8).classes("w-full gap-2")
+        # Preview circular
+        preview_container = ui.element("div").classes(
+            "self-center flex items-center justify-center"
+        ).style(
+            f"width: 120px; height: 120px; border-radius: 50%; overflow: hidden; "
+            f"background: {theme.GREY_BG}; margin: 8px auto;"
+        )
 
-        def repaint() -> None:
-            grid.clear()
-            with grid:
-                for emoji in AVATAR_OPTIONS:
-                    is_sel = state["selected"] == emoji
-                    bg = theme.SECONDARY if is_sel else theme.GREY_BG
-                    label_color = theme.WHITE if is_sel else theme.PRIMARY
-                    cell = ui.element("div").classes(
-                        "cursor-pointer flex items-center justify-center"
-                    ).style(
-                        f"width: 100%; aspect-ratio: 1; border-radius: 12px; "
-                        f"background: {bg}; font-size: 24px; "
-                        f"box-shadow: {('0 2px 8px ' + theme.SECONDARY + '66') if is_sel else 'none'}; "
-                        f"color: {label_color}; transition: all 0.15s ease;"
+        def render_preview() -> None:
+            preview_container.clear()
+            with preview_container:
+                if state["data_url"] and state["data_url"].startswith("data:"):
+                    ui.image(state["data_url"]).style(
+                        "width: 100%; height: 100%; object-fit: cover;"
                     )
-                    with cell:
-                        ui.label(emoji).style("font-size: 24px; line-height: 1;")
-                    cell.on("click", lambda e=emoji: _select(e))
+                else:
+                    ui.icon("person").style(
+                        f"color: {theme.GREY_SOFT}; font-size: 64px;"
+                    )
 
-        def _select(emoji: str) -> None:
-            state["selected"] = emoji
-            repaint()
+        render_preview()
 
-        repaint()
+        async def handle_upload(e) -> None:
+            content = e.content.read()
+            if len(content) > 2_000_000:
+                ui.notify("Image too large (max 2MB)", type="warning")
+                return
+            mime = e.type or "image/jpeg"
+            data_url = f"data:{mime};base64,{base64.b64encode(content).decode()}"
+            state["data_url"] = data_url
+            render_preview()
+            ui.notify("Photo loaded — tap Save to apply", type="info")
+
+        upload = ui.upload(
+            on_upload=handle_upload,
+            max_files=1,
+            auto_upload=True,
+        ).props('accept="image/*" flat color=primary label="Choose photo"').classes("w-full")
+        upload.style("border: 2px dashed " + theme.GREY_SOFT + "; border-radius: 12px; padding: 8px;")
+
+        if current:
+            ui.button("Remove current photo", on_click=lambda: _clear()).props(
+                "flat no-caps dense"
+            ).style(f"color: {theme.ERROR};")
+
+        def _clear() -> None:
+            state["data_url"] = ""
+            render_preview()
 
         async def submit() -> None:
-            if not state["selected"]:
-                ui.notify("Pick an emoji first", type="warning")
-                return
             try:
-                await api.update_avatar(state["selected"])
+                # "" para borrar; data URL para guardar
+                await api.update_avatar(state["data_url"] or "")
                 dialog.close()
-                ui.notify("Avatar updated", type="positive")
+                ui.notify("Profile updated", type="positive")
                 if on_success:
                     await on_success()
             except api.ApiException as e:

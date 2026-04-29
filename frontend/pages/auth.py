@@ -43,7 +43,7 @@ def login_page():
     _branded_header("Welcome back", "Sign in to continue")
 
     with _form_container():
-        email = ui.input("Email").props("outlined rounded dense").classes("w-full")
+        email = ui.input("Email").props("outlined rounded dense autofocus").classes("w-full")
         password = ui.input(
             "Password", password=True, password_toggle_button=True
         ).props("outlined rounded dense").classes("w-full")
@@ -65,6 +65,10 @@ def login_page():
                 error_label.text = e.message
             finally:
                 btn.props(remove="loading")
+
+        # Enter submite el form desde cualquier campo
+        email.on("keydown.enter", submit)
+        password.on("keydown.enter", submit)
 
         btn = primary_button("Sign in", submit)
 
