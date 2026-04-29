@@ -28,13 +28,21 @@ async def _request(method: str, path: str, **kwargs: Any) -> Any:
         headers["Authorization"] = f"Bearer {token}"
     headers["Content-Type"] = "application/json"
 
-    # Render free tier duerme y devuelve 429 al despertar (~30s). Reintento silencioso.
-    for attempt in range(10):
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.request(method, f"{BASE_URL}{path}", headers=headers, **kwargs)
+    # Render free tier: cold start aguanta ~30s y devuelve 429/timeout.
+    # Timeout de conexion corto (6s) para fallar rapido y reintentar.
+    _timeout = httpx.Timeout(connect=6.0, read=25.0, write=6.0, pool=6.0)
+    for attempt in range(6):
+        try:
+            async with httpx.AsyncClient(timeout=_timeout) as client:
+                response = await client.request(method, f"{BASE_URL}{path}", headers=headers, **kwargs)
+        except (httpx.TimeoutException, httpx.ConnectError):
+            if attempt < 5:
+                await asyncio.sleep(6)
+                continue
+            raise ApiException(503, "Server is starting up — please try again in a moment")
 
-        if response.status_code == 429 and attempt < 9:
-            await asyncio.sleep(4)
+        if response.status_code == 429 and attempt < 5:
+            await asyncio.sleep(6)
             continue
 
         if 200 <= response.status_code < 300:
