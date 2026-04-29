@@ -76,5 +76,10 @@ app.include_router(challenges.router, prefix="/api")
 
 @app.get("/health")
 def health():
-    """Health check para verificar que el servidor esta activo."""
     return {"status": "ok"}
+
+
+@app.get("/", include_in_schema=False)
+def root():
+    from fastapi.responses import RedirectResponse
+    return RedirectResponse(url="/docs")
