@@ -35,7 +35,7 @@ async def _request(method: str, path: str, **kwargs: Any) -> Any:
         try:
             async with httpx.AsyncClient(timeout=_timeout) as client:
                 response = await client.request(method, f"{BASE_URL}{path}", headers=headers, **kwargs)
-        except (httpx.TimeoutException, httpx.ConnectError):
+        except httpx.RequestError:
             if attempt < 5:
                 await asyncio.sleep(6)
                 continue
@@ -50,6 +50,8 @@ async def _request(method: str, path: str, **kwargs: Any) -> Any:
 
         try:
             detail = response.json().get("detail", response.text)
+            if isinstance(detail, list):
+                detail = detail[0].get("msg", "Invalid input") if detail else "Invalid input"
         except Exception:
             detail = response.text or "Unknown error"
         raise ApiException(response.status_code, str(detail))

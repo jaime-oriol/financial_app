@@ -25,7 +25,7 @@ class UserUpdate(BaseModel):
     o como string vacio para resetear. Limitado en backend a ~200KB para no
     saturar la BD ni la respuesta JSON.
     """
-    avatar: str | None = Field(default=None, max_length=200_000)
+    avatar: str | None = Field(default=None, max_length=500_000)
 
 
 # --- Responses ---

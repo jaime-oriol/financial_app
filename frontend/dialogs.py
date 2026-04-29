@@ -317,12 +317,16 @@ async def show_avatar_picker(current: str | None, on_success: OnSuccess = None) 
         render_preview()
 
         async def handle_upload(e) -> None:
-            content = e.content.read()
-            if len(content) > 2_000_000:
-                ui.notify("Image too large (max 2MB)", type="warning")
+            try:
+                content = e.content.read()
+                mime = e.type or "image/jpeg"
+                data_url = f"data:{mime};base64,{base64.b64encode(content).decode()}"
+            except Exception:
+                ui.notify("Could not read the photo — please try another file", type="warning")
                 return
-            mime = e.type or "image/jpeg"
-            data_url = f"data:{mime};base64,{base64.b64encode(content).decode()}"
+            if len(data_url) > 480_000:
+                ui.notify("Image too large — please choose a smaller photo (max ~350KB)", type="warning")
+                return
             state["data_url"] = data_url
             render_preview()
             ui.notify("Photo loaded — tap Save to apply", type="info")
