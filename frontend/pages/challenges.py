@@ -14,6 +14,26 @@ import api
 import theme
 from layout import app_shell, card, empty_state, require_auth, section
 
+XP_THRESHOLDS = {1: 100, 2: 300, 3: 600}
+
+
+def calculate_xp_progress(total_xp: int) -> dict:
+    if total_xp < XP_THRESHOLDS[1]:
+        current_level, prev, next_threshold = 1, 0, XP_THRESHOLDS[1]
+    elif total_xp < XP_THRESHOLDS[2]:
+        current_level, prev, next_threshold = 2, XP_THRESHOLDS[1], XP_THRESHOLDS[2]
+    else:
+        current_level, prev, next_threshold = 3, XP_THRESHOLDS[2], XP_THRESHOLDS[3]
+
+    xp_in_level = total_xp - prev
+    xp_needed = next_threshold - prev
+    return {
+        "current_level": current_level,
+        "xp_in_level": xp_in_level,
+        "xp_needed": xp_needed,
+        "progress_pct": round(xp_in_level / xp_needed * 100, 1),
+    }
+
 
 KIND_META = {
     "quiz": {"icon": "quiz", "subtitle": "Multiple choice"},
@@ -49,8 +69,19 @@ async def challenges_page():
             return
 
         refs["xp_label"].text = f"{dashboard.get('total_xp', 0)} XP"
-        done = dashboard.get('challenges_done', 0)
+        done = dashboard.get("challenges_done", 0)
         refs["done_label"].text = f"{done} challenge{'s' if done != 1 else ''} completed"
+
+        total_xp = dashboard.get("total_xp", 0)
+        prog = calculate_xp_progress(total_xp)
+        refs["xp_bar"].style(
+            f"height: 100%; width: {prog['progress_pct']}%; background: white; "
+            "border-radius: 99px; transition: width 0.4s ease;"
+        )
+        refs["xp_bar_label"].text = (
+            f"{prog['xp_in_level']} / {prog['xp_needed']} XP → Level {prog['current_level'] + 1}"
+        )
+
         _render_levels(refs["list"], challenges)
 
     with app_shell(active="/challenges"):
@@ -60,22 +91,36 @@ async def challenges_page():
 
         # XP banner
         with section(top=14):
-            with ui.row().classes("w-full items-center no-wrap gap-3").style(
+            with ui.column().classes("w-full no-wrap gap-0").style(
                 "background: linear-gradient(135deg, #2563EB 0%, #1A2D6E 100%); "
                 "border-radius: 18px; padding: 18px; "
                 "box-shadow: 0 4px 20px rgba(37,99,235,0.30);"
             ):
+                with ui.row().classes("w-full items-center no-wrap gap-3"):
+                    with ui.element("div").style(
+                        "background: rgba(255,255,255,0.16); width: 44px; height: 44px; "
+                        "border-radius: 12px; display: flex; align-items: center; "
+                        "justify-content: center; flex-shrink: 0;"
+                    ):
+                        ui.icon("auto_awesome").style(f"color: {theme.WHITE}; font-size: 24px;")
+                    with ui.column().classes("flex-1 gap-0").style("min-width: 0;"):
+                        refs["xp_label"] = ui.label("0 XP").classes("fapp-money").style(
+                            f"color: {theme.WHITE}; font-size: 22px; font-weight: 800;"
+                        )
+                        refs["done_label"] = ui.label("0 attempts").style(
+                            "color: rgba(255,255,255,0.75); font-size: 12px;"
+                        )
+                # Barra de progreso — dentro del column principal, fuera del row del icono
+                refs["xp_bar_label"] = ui.label("").style(
+                    "color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 8px;"
+                )
                 with ui.element("div").style(
-                    "background: rgba(255,255,255,0.16); width: 44px; height: 44px; "
-                    "border-radius: 12px; display: flex; align-items: center; justify-content: center;"
+                    "width: 100%; height: 6px; background: rgba(255,255,255,0.2); "
+                    "border-radius: 99px; margin-top: 4px; overflow: hidden;"
                 ):
-                    ui.icon("auto_awesome").style(f"color: {theme.WHITE}; font-size: 24px;")
-                with ui.column().classes("flex-1 gap-0").style("min-width: 0;"):
-                    refs["xp_label"] = ui.label("0 XP").classes("fapp-money").style(
-                        f"color: {theme.WHITE}; font-size: 22px; font-weight: 800;"
-                    )
-                    refs["done_label"] = ui.label("0 attempts").style(
-                        "color: rgba(255,255,255,0.75); font-size: 12px;"
+                    refs["xp_bar"] = ui.element("div").style(
+                        "height: 100%; width: 0%; background: white; "
+                        "border-radius: 99px; transition: width 0.4s ease;"
                     )
 
         with section():
@@ -106,21 +151,15 @@ def _render_levels(container: ui.column, challenges: list[dict]) -> None:
             level_locked = all(c["locked"] for c in items) and level > 1
 
             # Header del nivel
-            with ui.row().classes("w-full items-center gap-2 no-wrap").style(
-                "padding: 4px 4px;"
-            ):
+            with ui.row().classes("w-full items-center gap-2 no-wrap").style("padding: 4px 4px;"):
                 with ui.element("div").style(
                     f"background: {meta['color']}1f; width: 32px; height: 32px; "
-                    "border-radius: 10px; display: flex; align-items: center; "
-                    "justify-content: center;"
+                    "border-radius: 10px; display: flex; align-items: center; justify-content: center;"
                 ):
-                    ui.icon(meta["icon"]).style(
-                        f"color: {meta['color']}; font-size: 18px;"
-                    )
+                    ui.icon(meta["icon"]).style(f"color: {meta['color']}; font-size: 18px;")
                 with ui.column().classes("flex-1 gap-0"):
                     ui.label(meta["name"].upper()).style(
-                        f"color: {meta['color']}; font-size: 11px; font-weight: 700; "
-                        "letter-spacing: 1px;"
+                        f"color: {meta['color']}; font-size: 11px; font-weight: 700; letter-spacing: 1px;"
                     )
                     ui.label(f"{completed_in_level} / {len(items)} completed").style(
                         f"color: {theme.GREY_TEXT}; font-size: 11px;"
@@ -130,12 +169,8 @@ def _render_levels(container: ui.column, challenges: list[dict]) -> None:
                     with ui.row().classes("items-center gap-1").style(
                         f"background: {theme.GREY_BG}; padding: 4px 10px; border-radius: 8px;"
                     ):
-                        ui.icon("lock_outline").style(
-                            f"color: {theme.GREY_SOFT}; font-size: 14px;"
-                        )
-                        ui.label(
-                            f"Complete {UNLOCK_THRESHOLD} {prev_name} to unlock"
-                        ).style(
+                        ui.icon("lock_outline").style(f"color: {theme.GREY_SOFT}; font-size: 14px;")
+                        ui.label(f"Complete {UNLOCK_THRESHOLD} {prev_name} to unlock").style(
                             f"color: {theme.GREY_SOFT}; font-size: 11px; font-weight: 600;"
                         )
 
@@ -145,9 +180,7 @@ def _render_levels(container: ui.column, challenges: list[dict]) -> None:
 
 def _challenge_card(challenge: dict) -> None:
     meta = KIND_META.get(challenge["kind"], {"icon": "emoji_events", "subtitle": ""})
-    level_meta = LEVEL_META.get(
-        challenge["level"], {"color": theme.SECONDARY, "name": "Challenge"}
-    )
+    level_meta = LEVEL_META.get(challenge["level"], {"color": theme.SECONDARY, "name": "Challenge"})
     color = level_meta["color"]
     completed = challenge.get("completed", False)
     locked = challenge.get("locked", False)
@@ -170,9 +203,7 @@ def _challenge_card(challenge: dict) -> None:
                 f"background: {color}1f; width: 44px; height: 44px; border-radius: 12px; "
                 "display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
             ):
-                ui.icon("lock" if locked else meta["icon"]).style(
-                    f"color: {color}; font-size: 22px;"
-                )
+                ui.icon("lock" if locked else meta["icon"]).style(f"color: {color}; font-size: 22px;")
             with ui.column().classes("flex-1 gap-0").style("min-width: 0;"):
                 with ui.row().classes("items-center gap-2 no-wrap"):
                     ui.label(challenge["title"]).classes("flex-1").style(
@@ -185,21 +216,20 @@ def _challenge_card(challenge: dict) -> None:
                             "padding: 2px 8px; border-radius: 6px; font-size: 9.5px; "
                             "font-weight: 700; letter-spacing: 0.5px; flex-shrink: 0;"
                         )
-                ui.label(meta["subtitle"]).style(
-                    f"color: {theme.GREY_TEXT}; font-size: 12px;"
+                ui.label(meta["subtitle"]).style(f"color: {theme.GREY_TEXT}; font-size: 12px;")
+                stars_filled = challenge["level"]
+                stars_html = "".join(
+                    [f'<span style="color:{color}; font-size:12px;">★</span>'] * stars_filled +
+                    [f'<span style="color:{theme.GREY_SOFT}; font-size:12px;">★</span>'] * (3 - stars_filled)
                 )
+                ui.html(stars_html)
                 if locked:
                     ui.label("Locked — complete the previous level to unlock").style(
-                        f"color: {theme.GREY_SOFT}; font-size: 11px; font-weight: 500; "
-                        "margin-top: 2px;"
+                        f"color: {theme.GREY_SOFT}; font-size: 11px; font-weight: 500; margin-top: 2px;"
                     )
                 else:
                     ui.label(
                         f"Best: {best} XP" if completed else f"Earn up to {challenge['xp_reward']} XP"
-                    ).style(
-                        f"color: {color}; font-size: 11px; font-weight: 600; margin-top: 2px;"
-                    )
+                    ).style(f"color: {color}; font-size: 11px; font-weight: 600; margin-top: 2px;")
             if not locked:
-                ui.icon("chevron_right").style(
-                    f"color: {theme.GREY_SOFT}; font-size: 22px; flex-shrink: 0;"
-                )
+                ui.icon("chevron_right").style(f"color: {theme.GREY_SOFT}; font-size: 22px; flex-shrink: 0;")
