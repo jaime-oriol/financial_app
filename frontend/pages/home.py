@@ -9,7 +9,8 @@ Optimizaciones:
 """
 
 import asyncio
-from datetime import date, datetime
+import calendar
+from datetime import date, datetime, timedelta
 
 from nicegui import ui
 
@@ -34,10 +35,15 @@ async def home_page():
         return
 
     refs: dict = {}
+    trend_state = {"period": "Week", "daily": [], "expenses": []}
 
     async def reload() -> None:
         try:
-            me, dashboard = await asyncio.gather(api.get_me(), api.get_dashboard())
+            me, dashboard, expenses = await asyncio.gather(
+                api.get_me(),
+                api.get_dashboard(),
+                api.get_expenses(),
+            )
         except api.ApiException as e:
             if e.status in (401, 403):
                 ui.navigate.to("/login")
@@ -67,7 +73,9 @@ async def home_page():
             refs["budget_pct"].text = "—"
             refs["budget_pct"].style(f"color: {theme.GREY_SOFT};")
 
-        _render_trend(refs["trend"], dashboard.get("daily_spending", []))
+        trend_state["daily"] = dashboard.get("daily_spending", [])
+        trend_state["expenses"] = expenses
+        _render_trend(refs["trend"], trend_state["daily"], trend_state["expenses"], trend_state["period"])
         _render_recent(refs["recent"], dashboard.get("recent_transactions", []), reload)
 
     with app_shell(active="/"):
@@ -132,8 +140,28 @@ async def home_page():
                     f"color: {theme.SECONDARY};"
                 )
 
-        with section("7-Day Trend"):
+        with section("Spending Trend"):
             with card():
+                with ui.row().classes("w-full justify-between items-center no-wrap").style("margin-bottom: 6px;"):
+                    ui.label("View by").style(
+                        f"color: {theme.GREY_TEXT}; font-size: 12px; font-weight: 700;"
+                    )
+
+                    def change_trend_period(e):
+                        trend_state["period"] = e.value
+                        _render_trend(
+                            refs["trend"],
+                            trend_state["daily"],
+                            trend_state["expenses"],
+                            trend_state["period"],
+                        )
+
+                    ui.toggle(
+                        ["Week", "Month", "Year"],
+                        value=trend_state["period"],
+                        on_change=change_trend_period,
+                    ).props("toggle-color=primary size=sm").classes("text-xs")
+
                 refs["trend"] = ui.column().classes("w-full gap-1")
 
         with section("Recent Transactions"):
@@ -175,31 +203,47 @@ def _render_breakdown(stripe: ui.row, legend: ui.row, spending: list[dict], tota
                 ).style("color: rgba(255,255,255,0.85); font-size: 11px;")
 
 
-def _render_trend(container: ui.column, daily: list[dict]) -> None:
-    """Area chart con gradiente del gasto diario en los ultimos 7 dias."""
+def _render_trend(
+    container: ui.column,
+    daily: list[dict],
+    expenses: list[dict],
+    period: str = "Week",
+) -> None:
+    """Area chart del gasto por semana, mes o año."""
     container.clear()
-    if not daily:
+
+    labels, totals, avg_label = _build_trend_series(daily, expenses, period)
+
+    if not totals:
         with container:
             empty_state("show_chart", "No data yet")
         return
-    totals = [float(d["total"]) for d in daily]
+
     if sum(totals) <= 0:
         with container:
-            empty_state("show_chart", "Nothing spent in the last 7 days")
+            empty_state("show_chart", f"Nothing spent in this {period.lower()}")
         return
-    labels = [_short_label(d["date"]) for d in daily]
+
     avg = sum(totals) / len(totals)
     max_val = max(totals)
     max_idx = totals.index(max_val)
 
     with container:
         with ui.row().classes("w-full justify-between items-baseline").style("padding: 0 4px;"):
-            ui.label(f"Avg {theme.fmt_money(avg, 0)} / day").style(
+            ui.label(f"Avg {theme.fmt_money(avg, 0)} / {avg_label}").style(
                 f"color: {theme.GREY_TEXT}; font-size: 12px; font-weight: 600;"
             )
-            ui.label(
-                f"Peak {theme.fmt_money(max_val, 0)} on {labels[max_idx]}"
-            ).style(f"color: {theme.PRIMARY}; font-size: 12px; font-weight: 600;")
+            if period == "Year":
+                peak_text = f"Peak {theme.fmt_money(max_val, 0)} in {labels[max_idx]}"
+            elif period == "Month":
+                peak_text = f"Peak {theme.fmt_money(max_val, 0)} on day {labels[max_idx]}"
+            else:
+                peak_text = f"Peak {theme.fmt_money(max_val, 0)} on {labels[max_idx]}"
+
+            ui.label(peak_text).style(
+                f"color: {theme.PRIMARY}; font-size: 12px; font-weight: 600;"
+            )
+
         ui.echart(
             {
                 "tooltip": {
@@ -257,6 +301,42 @@ def _render_trend(container: ui.column, daily: list[dict]) -> None:
                 ],
             }
         ).style("height: 150px; width: 100%;")
+
+
+def _build_trend_series(
+    daily: list[dict],
+    expenses: list[dict],
+    period: str,
+) -> tuple[list[str], list[float], str]:
+    today = date.today()
+
+    if period == "Week":
+        labels = [_short_label(d["date"]) for d in daily]
+        totals = [float(d["total"]) for d in daily]
+        return labels, totals, "day"
+
+    if period == "Month":
+        days_in_month = calendar.monthrange(today.year, today.month)[1]
+        labels = [str(day) for day in range(1, days_in_month + 1)]
+        totals = [0.0 for _ in range(days_in_month)]
+
+        for expense in expenses:
+            expense_date = date.fromisoformat(str(expense["expense_date"]))
+            if expense_date.year == today.year and expense_date.month == today.month:
+                totals[expense_date.day - 1] += float(expense["amount"])
+
+        return labels, totals, "day"
+
+    labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    totals = [0.0 for _ in range(12)]
+
+    for expense in expenses:
+        expense_date = date.fromisoformat(str(expense["expense_date"]))
+        if expense_date.year == today.year:
+            totals[expense_date.month - 1] += float(expense["amount"])
+
+    return labels, totals, "month"
 
 
 def _short_label(d) -> str:
